@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Test - SymptomScan</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        button {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #357ae8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            max-height: 300px;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4285F4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Google OAuth Diagnostic Tool</h1>
+        <p>Use this page to test if your Google OAuth configuration is working correctly.</p>
+
+        <div id="status"></div>
+
+        <h3>Quick Tests:</h3>
+        <button onclick="testBackendHealth()">1. Test Backend Health</button>
+        <button onclick="testGoogleOAuthEndpoint()">2. Test Google OAuth Endpoint</button>
+        <button onclick="testGoogleLogin()">3. Initiate Google Login</button>
+        <button onclick="testDevLogin()">4. Test Dev Login</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        const resultsDiv = document.getElementById('results');
+        const statusDiv = document.getElementById('status');
+
+        function showStatus(message, type = 'info') {
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function addResult(title, data, success = true) {
+            const resultBlock = document.createElement('div');
+            resultBlock.innerHTML = `
+                <h4>${success ? '✅' : '❌'} ${title}</h4>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+            resultsDiv.appendChild(resultBlock);
+        }
+
+        async function testBackendHealth() {
+            showStatus('<span class="loading"></span> Testing backend health...', 'info');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('✅ Backend is running!', 'success');
+                    addResult('Backend Health Check', data, true);
+                } else {
+                    showStatus('❌ Backend returned an error', 'error');
+                    addResult('Backend Health Check', data, false);
+                }
+            } catch (error) {
+                showStatus(`❌ Cannot connect to backend at ${API_BASE_URL}`, 'error');
+                addResult('Backend Health Check', { error: error.message }, false);
+            }
+        }
+
+        async function testGoogleOAuthEndpoint() {
+            showStatus('<span class="loading"></span> Testing Google OAuth endpoint...', 'info');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                const url = `${API_BASE_URL}/api/auth/google/login?client_redirect_url=http://localhost:3000/auth/callback`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.auth_url) {
+                    showStatus('✅ Google OAuth is configured correctly!', 'success');
+                    addResult('Google OAuth Endpoint Test', {
+                        status: response.status,
+                        auth_url: data.auth_url.substring(0, 100) + '...',
+                        state: data.state,
+                        full_url_length: data.auth_url.length
+                    }, true);
+                } else {
+                    showStatus('❌ Google OAuth not configured', 'error');
+                    addResult('Google OAuth Endpoint Test', data, false);
+                }
+            } catch (error) {
+                showStatus('❌ Failed to fetch Google OAuth endpoint', 'error');
+                addResult('Google OAuth Endpoint Test', { 
+                    error: error.message,
+                    suggestion: 'Make sure backend is running on port 8000'
+                }, false);
+            }
+        }
+
+        async function testGoogleLogin() {
+            showStatus('<span class="loading"></span> Fetching Google login URL...', 'info');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                const url = `${API_BASE_URL}/api/auth/google/login?client_redirect_url=http://localhost:3000/auth/callback`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.auth_url) {
+                    showStatus('✅ Redirecting to Google...', 'success');
+                    addResult('Google Login Initiated', {
+                        message: 'Redirecting to Google in 2 seconds...',
+                        auth_url_preview: data.auth_url.substring(0, 100) + '...'
+                    }, true);
+                    
+                    setTimeout(() => {
+                        window.location.href = data.auth_url;
+                    }, 2000);
+                } else {
+                    showStatus('❌ Cannot initiate Google login', 'error');
+                    addResult('Google Login Test', data, false);
+                }
+            } catch (error) {
+                showStatus('❌ Failed to initiate Google login', 'error');
+                addResult('Google Login Test', { error: error.message }, false);
+            }
+        }
+
+        async function testDevLogin() {
+            showStatus('<span class="loading"></span> Testing development login...', 'info');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/dev-login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'test123',
+                        name: 'Test User'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.access_token) {
+                    showStatus('✅ Dev login works!', 'success');
+                    addResult('Dev Login Test', {
+                        user: data.user,
+                        token_length: data.access_token.length,
+                        token_preview: data.access_token.substring(0, 20) + '...'
+                    }, true);
+                } else {
+                    showStatus('❌ Dev login failed', 'error');
+                    addResult('Dev Login Test', data, false);
+                }
+            } catch (error) {
+                showStatus('❌ Dev login failed', 'error');
+                addResult('Dev Login Test', { error: error.message }, false);
+            }
+        }
+
+        // Auto-run health check on load
+        window.addEventListener('load', () => {
+            testBackendHealth();
+        });
+    </script>
+</body>
+</html>

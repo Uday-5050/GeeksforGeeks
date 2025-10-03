@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import { devLogin, startOAuthLogin, getStoredAuth } from '../services/auth';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -13,7 +14,14 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const session = getStoredAuth();
+    if (session?.user?.email) {
+      navigate(session.user.role === 'admin' ? '/dashboard' : '/home', { replace: true });
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -32,43 +40,70 @@ export default function Login() {
       return;
     }
 
-    // Simulate authentication delay
-    setTimeout(() => {
+    try {
+      const session = await devLogin({
+        email: formData.email,
+        password: formData.password,
+        name: formData.email.split('@')[0],
+      });
+
       if (activeTab === 'signup') {
-        // Sign up successful
-        console.log('Sign up successful:', formData.email);
-        localStorage.setItem('userRole', 'user');
-        localStorage.setItem('userEmail', formData.email);
-        navigate('/home');
+        console.log('Account created:', session.user.email);
       } else {
-        // Login flow
-        const isAdmin = formData.email.toLowerCase().includes('admin');
-        
-        if (isAdmin) {
-          console.log('Admin login successful:', formData.email);
-          localStorage.setItem('userRole', 'admin');
-          localStorage.setItem('userEmail', formData.email);
-          navigate('/dashboard');
-        } else {
-          console.log('User login successful:', formData.email);
-          localStorage.setItem('userRole', 'user');
-          localStorage.setItem('userEmail', formData.email);
-          navigate('/home');
-        }
+        console.log('Login successful:', session.user.email);
       }
-      
+
+      navigate(session.user.role === 'admin' ? '/dashboard' : '/home');
+    } catch (err) {
+      setError(err.message || 'Unable to sign in. Please try again.');
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
-  const handleSocialLogin = (provider) => {
-    console.log(`${provider} login clicked`);
-    // Simulate social login
-    setTimeout(() => {
-      localStorage.setItem('userRole', 'user');
-      localStorage.setItem('userEmail', `user@${provider.toLowerCase()}.com`);
-      navigate('/home');
-    }, 500);
+  const handleSocialLogin = async (provider) => {
+    setError('');
+    setLoading(true);
+    
+    console.log(`[OAuth] Starting ${provider} login...`);
+    console.log(`[OAuth] API_BASE_URL: http://localhost:8000`);
+    
+    try {
+      console.log(`[OAuth] Calling startOAuthLogin for ${provider}...`);
+      const result = await startOAuthLogin(provider.toLowerCase());
+      console.log(`[OAuth] Success! Got auth_url:`, result);
+      
+      const { auth_url: authUrl } = result;
+      if (!authUrl) {
+        throw new Error('No auth_url received from backend');
+      }
+      
+      console.log(`[OAuth] Redirecting to Google...`);
+      window.location.href = authUrl;
+    } catch (err) {
+      console.error(`[OAuth] ${provider} login failed:`, err);
+      console.error(`[OAuth] Error type:`, err.constructor.name);
+      console.error(`[OAuth] Error message:`, err.message);
+      console.error(`[OAuth] Error stack:`, err.stack);
+      
+      // Check if it's a 503 error (OAuth not configured)
+      if (err.message?.includes('not configured') || err.message?.includes('503')) {
+        setError(
+          `${provider} login is not configured yet. ` +
+          `Please use the email login above or configure ${provider} OAuth in the backend .env file. ` +
+          `See AUTHENTICATION_SETUP.md for instructions.`
+        );
+      } else if (err.message?.includes('fetch')) {
+        setError(
+          `Cannot connect to backend server. ` +
+          `Make sure both frontend and backend servers are running. ` +
+          `Backend should be at http://localhost:8000`
+        );
+      } else {
+        setError(err.message || `${provider} login is currently unavailable. Please use email login above.`);
+      }
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -268,6 +303,7 @@ export default function Login() {
               type="button" 
               className="social-btn google-btn"
               onClick={() => handleSocialLogin('Google')}
+              disabled={loading}
             >
               <svg viewBox="0 0 24 24" className="social-icon">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -281,12 +317,26 @@ export default function Login() {
               type="button" 
               className="social-btn github-btn"
               onClick={() => handleSocialLogin('GitHub')}
+              disabled={loading}
             >
               <svg viewBox="0 0 24 24" className="social-icon">
                 <path fill="#181717" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
               </svg>
               GitHub
             </button>
+          </div>
+
+          {/* Development Note */}
+          <div className="dev-login-note" style={{ 
+            marginTop: '12px', 
+            padding: '10px', 
+            backgroundColor: '#f0f7ff', 
+            borderRadius: '8px',
+            fontSize: '13px',
+            color: '#555',
+            border: '1px solid #d0e7ff'
+          }}>
+            💡 <strong>Development Mode:</strong> Use email login above for quick testing. OAuth providers require setup (see AUTHENTICATION_SETUP.md).
           </div>
 
           {/* Terms */}

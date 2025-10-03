@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
+import { getStoredAuth, logout } from '../services/auth';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+
+  useEffect(() => {
+    const session = getStoredAuth();
+    if (!session || !session.user) {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate]);
 
   const stats = [
     { title: 'Total Consultations', value: '1,234', icon: '🏥', color: 'purple' },
@@ -20,10 +28,14 @@ export default function Dashboard() {
     { id: 4, patient: 'Sarah Williams', age: 35, condition: 'Cold', severity: 'SELF_CARE', time: '2 hours ago' }
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (err) {
+      console.error('Logout error', err);
+      navigate('/login', { replace: true });
+    }
   };
 
   return (

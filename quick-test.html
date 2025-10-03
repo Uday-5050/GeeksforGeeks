@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quick OAuth Test</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        button { padding: 15px 30px; font-size: 16px; margin: 10px; cursor: pointer; }
+        .google { background: #4285F4; color: white; border: none; border-radius: 5px; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #fee; border: 1px solid #fcc; color: #c00; }
+        .success { background: #efe; border: 1px solid #cfc; color: #060; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Quick OAuth Debug</h1>
+    <p>Click the button to test Google OAuth directly:</p>
+    
+    <button class="google" onclick="testOAuth()">🔐 Test Google Login</button>
+    
+    <div id="status"></div>
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        
+        async function testOAuth() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.innerHTML = '<div class="status">Testing...</div>';
+            resultDiv.innerHTML = '';
+            
+            try {
+                console.log('Fetching from:', API_URL + '/api/auth/google/login?client_redirect_url=http://localhost:3000/auth/callback');
+                
+                const response = await fetch(
+                    API_URL + '/api/auth/google/login?client_redirect_url=http://localhost:3000/auth/callback',
+                    {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (response.ok && data.auth_url) {
+                    statusDiv.innerHTML = '<div class="status success">✅ SUCCESS! Redirecting to Google in 2 seconds...</div>';
+                    resultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                    
+                    setTimeout(() => {
+                        window.location.href = data.auth_url;
+                    }, 2000);
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Error: ' + (data.detail || 'Unknown error') + '</div>';
+                    resultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                statusDiv.innerHTML = '<div class="status error">❌ Failed to fetch: ' + error.message + '</div>';
+                resultDiv.innerHTML = `
+                    <h3>Troubleshooting:</h3>
+                    <ul>
+                        <li>Make sure backend is running: <code>python -m uvicorn geeksforgeeks.triage:app --reload --port 8000</code></li>
+                        <li>Check backend URL: <a href="${API_URL}/api/health" target="_blank">${API_URL}/api/health</a></li>
+                        <li>Check if port 8000 is listening: <code>netstat -ano | findstr :8000</code></li>
+                    </ul>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

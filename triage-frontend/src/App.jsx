@@ -4,12 +4,13 @@ import Demo from './pages/Demo';
 import About from './pages/About';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import AuthCallback from './pages/AuthCallback';
 
 function Navigation() {
   const location = useLocation();
   
   // Don't show navigation on login, dashboard, or home page
-  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/dashboard' || location.pathname === '/home') {
+  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/dashboard' || location.pathname === '/home' || location.pathname === '/auth/callback') {
     return null;
   }
   
@@ -52,6 +53,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </Router>
   );

@@ -5,6 +5,7 @@ import TriageResult from '../components/TriageResult';
 import { callTriageAPI, buildTriagePayload } from '../services/api';
 import './Home.css';
 import { isGeminiConfigured } from '../services/gemini';
+import { getStoredAuth, logout } from '../services/auth';
 
 export default function Home() {
   const [result, setResult] = useState(null);
@@ -36,16 +37,17 @@ export default function Home() {
 
   useEffect(() => {
     // Check if user is logged in
-    const userRole = localStorage.getItem('userRole');
-    const userEmail = localStorage.getItem('userEmail');
-    
-    if (userRole && userEmail) {
-      setUserInfo({ role: userRole, email: userEmail });
+    const session = getStoredAuth();
+    if (!session || !session.user) {
+      navigate('/login', { replace: true });
+      return;
     }
+    
+    setUserInfo({ role: session.user.role, email: session.user.email, name: session.user.name || session.user.email });
     
     // Check if Gemini is configured
     setGeminiEnabled(isGeminiConfigured());
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = async (formData) => {
     setLoading(true);
@@ -63,6 +65,9 @@ export default function Home() {
         errorMessage = '🔑 Gemini API key not configured. Please add your API key to the .env file to enable AI diagnosis. See GEMINI_SETUP.md for instructions.';
       } else if (err.message.includes('Failed to get AI diagnosis')) {
         errorMessage = '⚠️ AI analysis temporarily unavailable. Please try again or check your API key configuration.';
+      } else if (err.message.includes('Unauthorized')) {
+        errorMessage = '🔑 Your session has expired. Please log in again.';
+        setTimeout(() => navigate('/login', { replace: true }), 2000);
       } else {
         errorMessage += 'Please check your connection and try again.';
       }
@@ -79,11 +84,14 @@ export default function Home() {
     setError(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    setUserInfo(null);
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (err) {
+      console.error('Logout error', err);
+      navigate('/login', { replace: true });
+    }
   };
 
   return (

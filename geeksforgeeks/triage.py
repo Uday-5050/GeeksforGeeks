@@ -2,6 +2,7 @@ import os
 import sqlite3
 import uuid
 import yaml
+import json
 from datetime import datetime
 from typing import List, Dict, Optional, Any
 from fastapi import FastAPI, HTTPException, Depends
@@ -9,6 +10,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import openai
 from dotenv import load_dotenv
+
+try:
+    from .auth_backend import (
+        router as auth_router,
+        AuthUser,
+        get_current_user,
+    )
+except ImportError:  # pragma: no cover - fallback for direct execution
+    from auth_backend import (  # type: ignore
+        router as auth_router,
+        AuthUser,
+        get_current_user,
+    )
 
 # Load environment variables
 load_dotenv()
@@ -28,8 +42,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include authentication routes
+app.include_router(auth_router)
+
 # Database setup
-DB_FILE = "triage_sessions.db"
+DB_FILE = os.getenv("TRIAGE_DB_FILE", "triage_sessions.db")
+
 
 def init_db():
     """Initialize SQLite database for session logging"""
@@ -46,9 +64,15 @@ def init_db():
             triage_label TEXT,
             matched_rules TEXT,
             explanation TEXT,
-            session_data TEXT
+            session_data TEXT,
+            user_id TEXT
         )
     """)
+    # Ensure user_id column exists for older databases
+    cursor.execute("PRAGMA table_info(triage_sessions)")
+    columns = {row[1] for row in cursor.fetchall()}
+    if "user_id" not in columns:
+        cursor.execute("ALTER TABLE triage_sessions ADD COLUMN user_id TEXT")
     conn.commit()
     conn.close()
 
@@ -179,7 +203,7 @@ class TriageEvaluator:
         
         return False, 0.0
     
-    def evaluate_triage(self, request: TriageRequest) -> TriageResponse:
+    def evaluate_triage(self, request: TriageRequest, user: Optional[AuthUser] = None) -> TriageResponse:
         """Evaluate triage request against all rules in priority order"""
         matched_rules = []
         
@@ -219,7 +243,7 @@ class TriageEvaluator:
         session_id = request.session_id or str(uuid.uuid4())
         
         # Log to database
-        self.log_session(session_id, request, triage_label, matched_rules, explanation)
+        self.log_session(session_id, request, triage_label, matched_rules, explanation, user)
         
         return TriageResponse(
             session_id=session_id,
@@ -287,16 +311,22 @@ class TriageEvaluator:
         return response.choices[0].message.content.strip()
     
     def log_session(self, session_id: str, request: TriageRequest, triage_label: str, 
-                   matched_rules: List[Dict], explanation: str):
+                   matched_rules: List[Dict], explanation: str, user: Optional[AuthUser] = None):
         """Log triage session to SQLite database"""
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
+        session_data = json.dumps({
+            "request": request.dict(),
+            "recorded_at": datetime.now().isoformat(),
+            "user_id": user.id if user else None,
+        })
+        
         cursor.execute("""
             INSERT OR REPLACE INTO triage_sessions 
             (id, symptoms, severity, duration, additional_factors, triage_label, 
-             matched_rules, explanation, session_data)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+             matched_rules, explanation, session_data, user_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             session_id,
             ", ".join(request.symptoms),
@@ -306,7 +336,8 @@ class TriageEvaluator:
             triage_label,
             str(matched_rules),
             explanation,
-            str(request.dict())
+            session_data,
+            user.id if user else None,
         ))
         
         conn.commit()
@@ -317,12 +348,12 @@ evaluator = TriageEvaluator()
 
 # API Endpoints
 @app.post("/api/triage", response_model=TriageResponse)
-async def triage_endpoint(request: TriageRequest):
+async def triage_endpoint(request: TriageRequest, user: AuthUser = Depends(get_current_user)):
     """
     Main triage endpoint that evaluates symptoms and returns triage recommendation
     """
     try:
-        return evaluator.evaluate_triage(request)
+        return evaluator.evaluate_triage(request, user)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Triage evaluation error: {str(e)}")
 
@@ -406,6 +437,12 @@ async def health_check():
 async def get_rules():
     """Get current triage rules (for debugging/admin)"""
     return evaluator.rules_data
+
+
+@app.get("/api/me", response_model=AuthUser)
+async def get_current_user_profile(user: AuthUser = Depends(get_current_user)):
+    """Return profile of the authenticated user"""
+    return user
 
 if __name__ == "__main__":
     import uvicorn
