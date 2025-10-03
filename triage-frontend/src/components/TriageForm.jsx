@@ -44,11 +44,29 @@ export default function TriageForm({ onSubmit, loading }) {
   };
 
   return (
+<<<<<<< HEAD
     <div className="triage-card">
       <div className="triage-header">
         <h2>Medical Triage Assessment</h2>
         <p>Please provide detailed information about your symptoms</p>
       </div>
+=======
+    <form onSubmit={handleSubmit} className="card">
+      <h1 style={{ marginBottom: '0.5rem', color: '#2c3e50' }}>
+        Medical Triage Assessment
+      </h1>
+      <p style={{ 
+        fontSize: '0.95rem', 
+        color: '#7c3aed', 
+        marginBottom: '1.5rem',
+        fontWeight: '500',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <span>🤖</span> AI-Powered by Google Gemini Flash 2.5
+      </p>
+>>>>>>> 3412349c31f9968e41c4eac6ff7e332bc72928c3
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -104,6 +122,7 @@ export default function TriageForm({ onSubmit, loading }) {
             />
           </div>
 
+<<<<<<< HEAD
           <div className="form-group">
             <label htmlFor="severity" className="form-label">
               Symptom Severity <span className="required">*</span>
@@ -123,6 +142,39 @@ export default function TriageForm({ onSubmit, loading }) {
             </select>
           </div>
         </div>
+=======
+      <button
+        type="submit"
+        className="btn-primary"
+        disabled={loading}
+        style={{ 
+          width: '100%', 
+          marginTop: '1rem',
+          fontSize: '1.3rem',
+          padding: '1rem',
+          background: loading ? '#9ca3af' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        {loading ? (
+          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <span style={{ 
+              display: 'inline-block',
+              width: '20px',
+              height: '20px',
+              border: '3px solid rgba(255,255,255,0.3)',
+              borderTop: '3px solid white',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}></span>
+            AI Analyzing Your Symptoms...
+          </span>
+        ) : (
+          '🤖 Get AI Diagnosis'
+        )}
+      </button>
+>>>>>>> 3412349c31f9968e41c4eac6ff7e332bc72928c3
 
         <button
           type="submit"

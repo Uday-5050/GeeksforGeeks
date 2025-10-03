@@ -1,0 +1,58 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    🤖 GEMINI AI QUICK SETUP GUIDE                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 STEP 1: GET YOUR FREE API KEY
+   ➤ Visit: https://aistudio.google.com/app/apikey
+   ➤ Sign in with Google
+   ➤ Click "Create API Key"
+   ➤ Copy your key (starts with AIza...)
+
+📝 STEP 2: ADD TO .ENV FILE
+   ➤ Open: triage-frontend/.env
+   ➤ Find: VITE_GEMINI_API_KEY=
+   ➤ Paste: VITE_GEMINI_API_KEY=AIzaSyYourKeyHere
+   ➤ Save the file
+
+🔄 STEP 3: RESTART SERVER
+   ➤ Press: Ctrl+C (stop server)
+   ➤ Run: npm run dev
+   ➤ Visit: http://localhost:3000
+
+✅ DONE! Your AI is now active!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 WHAT YOU GET:
+   ✓ AI-powered symptom analysis
+   ✓ Intelligent triage classification
+   ✓ Natural language understanding
+   ✓ Instant preliminary diagnosis
+   ✓ Personalized recommendations
+   ✓ Warning signs detection
+
+📊 FREE TIER LIMITS:
+   ✓ 60 requests per minute
+   ✓ 1,500 requests per day
+   ✓ Perfect for development & demos!
+
+🔍 VERIFY IT'S WORKING:
+   ✓ Look for purple "AI-Powered" banner on home page
+   ✓ Check browser console for "🤖 Using Gemini AI..."
+   ✓ Results will show "AI-Powered Analysis" badge
+
+⚠️  IMPORTANT:
+   ✗ Never commit .env file to Git
+   ✗ Don't share your API key publicly
+   ✗ Keep .env in .gitignore
+
+📚 NEED MORE HELP?
+   ➤ Read: triage-frontend/GEMINI_SETUP.md
+   ➤ Docs: https://ai.google.dev/docs
+   ➤ Console: Press F12 to see detailed logs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 TIP: Test with the Demo page first to see AI in action!
+
+🎉 Happy Diagnosing! 🏥

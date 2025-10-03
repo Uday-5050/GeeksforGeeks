@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Gemini API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .loading {
+            color: #667eea;
+            font-weight: 600;
+        }
+        .success {
+            color: #22c55e;
+            font-weight: 600;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Gemini API Test</h1>
+        <p>Click the button below to test your Gemini API key</p>
+        
+        <button onclick="testGemini()">Test Gemini API</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+        window.testGemini = async function() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<span class="loading">🔄 Testing API connection...</span>';
+            
+            const API_KEY = 'AIzaSyCt-ldaiPCLO1DaOM1q4JKp7UyzvBbBaUk';
+            
+            try {
+                resultDiv.innerHTML += '\n\n✅ API Key loaded';
+                resultDiv.innerHTML += '\n✅ Initializing Gemini AI...';
+                
+                const genAI = new GoogleGenerativeAI(API_KEY);
+                const model = genAI.getGenerativeModel({ 
+                    model: "gemini-2.0-flash-exp"
+                });
+                
+                resultDiv.innerHTML += '\n✅ Model initialized';
+                resultDiv.innerHTML += '\n🤖 Sending test request...';
+                
+                const result = await model.generateContent("Say hello in one sentence");
+                const response = await result.response;
+                const text = response.text();
+                
+                resultDiv.innerHTML = `<span class="success">✅ SUCCESS!</span>\n\n`;
+                resultDiv.innerHTML += `API Key: Valid ✅\n`;
+                resultDiv.innerHTML += `Model: gemini-2.0-flash-exp ✅\n`;
+                resultDiv.innerHTML += `Response received ✅\n\n`;
+                resultDiv.innerHTML += `AI Response:\n"${text}"`;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ ERROR</span>\n\n`;
+                resultDiv.innerHTML += `Error: ${error.message}\n\n`;
+                
+                if (error.message.includes('API_KEY_INVALID') || error.message.includes('API key')) {
+                    resultDiv.innerHTML += `\n⚠️ Your API key appears to be invalid.\n`;
+                    resultDiv.innerHTML += `\nPlease:\n`;
+                    resultDiv.innerHTML += `1. Visit: https://aistudio.google.com/app/apikey\n`;
+                    resultDiv.innerHTML += `2. Create a new API key\n`;
+                    resultDiv.innerHTML += `3. Replace the key in .env file\n`;
+                } else if (error.message.includes('RESOURCE_EXHAUSTED')) {
+                    resultDiv.innerHTML += `\n⚠️ Rate limit exceeded. Please wait a moment and try again.\n`;
+                } else {
+                    resultDiv.innerHTML += `\nFull error details:\n${JSON.stringify(error, null, 2)}`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
