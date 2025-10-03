@@ -19,6 +19,7 @@ rules:
     triage_label: "EMERGENCY_911"
     name: "Stroke Symptoms"
     conditions:
+
       - symptoms: ["stroke", "face drooping", "arm weakness", "speech difficulty", "sudden confusion"]
         severity: ["any"]
       - symptoms: ["severe headache", "sudden vision loss", "loss of balance"]
