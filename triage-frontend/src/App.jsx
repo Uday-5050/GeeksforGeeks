@@ -17,7 +17,7 @@ function Navigation() {
     <nav>
       <ul>
         <li>
-          <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
+          <Link to="/home" className={location.pathname === '/home' ? 'active' : ''}>
             Home
           </Link>
         </li>
@@ -46,7 +46,8 @@ function App() {
     <Router>
       <Navigation />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />

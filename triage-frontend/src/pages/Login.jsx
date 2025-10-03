@@ -40,7 +40,7 @@ export default function Login() {
         console.log('User login successful:', formData.email);
         localStorage.setItem('userRole', 'user');
         localStorage.setItem('userEmail', formData.email);
-        navigate('/');
+        navigate('/home');
       }
       
       setLoading(false);
