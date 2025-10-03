@@ -52,7 +52,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include authentication routes
+# Include authentication routesheufesah   
 app.include_router(auth_router)
 
 # Database setup

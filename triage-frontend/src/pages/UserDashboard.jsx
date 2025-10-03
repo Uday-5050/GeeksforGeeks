@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { callTriageAPI, buildTriagePayload } from '../services/api';
 import './UserDashboard.css';
 
 export default function UserDashboard() {
@@ -72,29 +73,30 @@ export default function UserDashboard() {
     setIsAnalyzing(true);
 
     try {
-      // Call the triage API
-      const response = await fetch('http://localhost:8000/api/triage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          symptoms: allSymptoms,
-          severity: 'moderate', // You can add a selector for this
-          duration: '2 days', // You can add a selector for this
-          additional_factors: [],
-        }),
-      });
+      // Build form data for API
+      const formData = {
+        symptoms_text: symptoms,
+        symptoms_list: selectedSymptoms.map(s => s.id),
+        severity: 'moderate',
+        age: null,
+      };
 
-      if (!response.ok) {
-        throw new Error('Analysis failed');
-      }
-
-      const result = await response.json();
+      // Call the triage API with authentication
+      const result = await callTriageAPI(
+        buildTriagePayload(formData),
+        formData
+      );
+      
+      // Normalize result: ensure triage_label exists (handle both backend and Gemini formats)
+      const normalizedResult = {
+        ...result,
+        triage_label: result.triage_label || result.triage_level || 'ROUTINE',
+        triage_level: result.triage_level || result.triage_label || 'ROUTINE'
+      };
       
       // Enhanced result with recommendations
       const enhancedResult = {
-        ...result,
+        ...normalizedResult,
         timestamp: new Date().toISOString(),
         symptoms: allSymptoms,
       };
@@ -115,19 +117,27 @@ export default function UserDashboard() {
   };
 
   const getRiskLevel = (triageLabel) => {
-    if (triageLabel.includes('EMERGENCY') || triageLabel.includes('911')) {
+    // Handle null/undefined
+    const label = (triageLabel || 'ROUTINE').toString().toUpperCase();
+    
+    if (label.includes('EMERGENCY') || label.includes('911')) {
       return { level: 'High', color: 'red', icon: '🚨' };
-    } else if (triageLabel.includes('URGENT')) {
+    } else if (label.includes('URGENT')) {
       return { level: 'Moderate', color: 'orange', icon: '⚠️' };
-    } else if (triageLabel.includes('DOCTOR')) {
+    } else if (label.includes('DOCTOR') || label.includes('ROUTINE')) {
       return { level: 'Moderate', color: 'yellow', icon: '🩺' };
+    } else if (label.includes('SELF_CARE') || label.includes('SELFCARE')) {
+      return { level: 'Low', color: 'green', icon: '✅' };
     } else {
       return { level: 'Low', color: 'green', icon: '✅' };
     }
   };
 
   const getRecommendation = (triageLabel) => {
-    if (triageLabel.includes('EMERGENCY') || triageLabel.includes('911')) {
+    // Handle null/undefined
+    const label = (triageLabel || 'ROUTINE').toString().toUpperCase();
+    
+    if (label.includes('EMERGENCY') || label.includes('911')) {
       return {
         title: '🚨 Emergency Alert',
         action: 'Call 911 or go to the nearest Emergency Room immediately',
@@ -139,7 +149,7 @@ export default function UserDashboard() {
         ],
         specialists: ['Emergency Medicine']
       };
-    } else if (triageLabel.includes('URGENT')) {
+    } else if (label.includes('URGENT')) {
       return {
         title: '🩺 Doctor Visit Recommended',
         action: 'Visit urgent care or schedule a doctor appointment within 24 hours',
@@ -151,7 +161,7 @@ export default function UserDashboard() {
         ],
         specialists: ['General Physician', 'Internal Medicine']
       };
-    } else if (triageLabel.includes('DOCTOR')) {
+    } else if (label.includes('DOCTOR') || label.includes('ROUTINE')) {
       return {
         title: '🩺 Doctor Visit Recommended',
         action: 'Schedule an appointment with your doctor within 48 hours',
