@@ -9,7 +9,7 @@ function Navigation() {
   const location = useLocation();
   
   // Don't show navigation on login, dashboard, or home page
-  if (location.pathname === '/login' || location.pathname === '/dashboard' || location.pathname === '/home') {
+  if (location.pathname === '/' || location.pathname === '/login' || location.pathname === '/dashboard' || location.pathname === '/home') {
     return null;
   }
   

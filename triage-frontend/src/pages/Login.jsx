@@ -4,9 +4,11 @@ import './Login.css';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('login'); // 'login' or 'signup'
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,28 +25,50 @@ export default function Login() {
       return;
     }
 
+    // Sign up validation
+    if (activeTab === 'signup' && formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
     // Simulate authentication delay
     setTimeout(() => {
-      // Check if user is admin
-      // Admin credentials: admin@symptomscan.com or any email containing 'admin'
-      const isAdmin = formData.email.toLowerCase().includes('admin');
-      
-      if (isAdmin) {
-        // Admin user - redirect to dashboard
-        console.log('Admin login successful:', formData.email);
-        localStorage.setItem('userRole', 'admin');
-        localStorage.setItem('userEmail', formData.email);
-        navigate('/dashboard');
-      } else {
-        // Normal user - redirect to main symptom page
-        console.log('User login successful:', formData.email);
+      if (activeTab === 'signup') {
+        // Sign up successful
+        console.log('Sign up successful:', formData.email);
         localStorage.setItem('userRole', 'user');
         localStorage.setItem('userEmail', formData.email);
         navigate('/home');
+      } else {
+        // Login flow
+        const isAdmin = formData.email.toLowerCase().includes('admin');
+        
+        if (isAdmin) {
+          console.log('Admin login successful:', formData.email);
+          localStorage.setItem('userRole', 'admin');
+          localStorage.setItem('userEmail', formData.email);
+          navigate('/dashboard');
+        } else {
+          console.log('User login successful:', formData.email);
+          localStorage.setItem('userRole', 'user');
+          localStorage.setItem('userEmail', formData.email);
+          navigate('/home');
+        }
       }
       
       setLoading(false);
     }, 800);
+  };
+
+  const handleSocialLogin = (provider) => {
+    console.log(`${provider} login clicked`);
+    // Simulate social login
+    setTimeout(() => {
+      localStorage.setItem('userRole', 'user');
+      localStorage.setItem('userEmail', `user@${provider.toLowerCase()}.com`);
+      navigate('/home');
+    }, 500);
   };
 
   const handleChange = (e) => {
@@ -119,15 +143,50 @@ export default function Login() {
 
       <div className="login-right-panel">
         <div className="login-card">
-          <div className="login-header">
-            <div className="user-icon">
-              <svg viewBox="0 0 100 100" className="user-svg">
-                <circle cx="50" cy="35" r="15" fill="#8b7fd1"/>
-                <path d="M30 70 Q30 50 50 50 Q70 50 70 70 L65 80 L35 80 Z" fill="#8b7fd1"/>
-              </svg>
-            </div>
-            <h2 className="welcome-title">Welcome User</h2>
-            <p className="welcome-subtitle">Sign In to continue</p>
+          {/* Logo */}
+          <div className="card-logo">
+            <svg viewBox="0 0 120 120" className="card-logo-svg">
+              <path d="M 40 90 Q 35 70 35 50 Q 35 25 55 15 Q 65 10 75 15 Q 95 25 95 50 Q 95 67 89 83" 
+                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="2.5" />
+              <circle cx="60" cy="42" r="8" fill="#8b7fd1" />
+              <circle cx="68" cy="58" r="15" fill="white" stroke="#8b7fd1" strokeWidth="2.5" />
+              <g transform="translate(68, 58)">
+                <line x1="0" y1="-7" x2="0" y2="7" stroke="#8b7fd1" strokeWidth="2" />
+                <path d="M -5 -5 Q 0 0 -5 5" fill="none" stroke="#8b7fd1" strokeWidth="1.5" />
+                <path d="M 5 -5 Q 0 0 5 5" fill="none" stroke="#8b7fd1" strokeWidth="1.5" />
+                <circle cx="0" cy="-9" r="2" fill="#8b7fd1" />
+              </g>
+              <line x1="79" y1="69" x2="88" y2="78" stroke="#8b7fd1" strokeWidth="3" strokeLinecap="round" />
+              <ellipse cx="35" cy="25" rx="8" ry="13" fill="#90c674" transform="rotate(-30 35 25)" />
+            </svg>
+          </div>
+
+          {/* Welcome Text */}
+          <div className="card-welcome">
+            <h1 className="card-welcome-title">
+              Welcome to <span className="gradient-text">SymptomScan</span>
+            </h1>
+            <p className="card-welcome-subtitle">
+              💚 Analyze. Remedy. Heal.
+            </p>
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="auth-tabs">
+            <button 
+              className={`auth-tab ${activeTab === 'login' ? 'active' : ''}`}
+              onClick={() => setActiveTab('login')}
+              type="button"
+            >
+              Login
+            </button>
+            <button 
+              className={`auth-tab ${activeTab === 'signup' ? 'active' : ''}`}
+              onClick={() => setActiveTab('signup')}
+              type="button"
+            >
+              Sign Up
+            </button>
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
@@ -139,7 +198,7 @@ export default function Login() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email"
+                placeholder="your.email@example.com"
                 autoComplete="email"
               />
             </div>
@@ -152,10 +211,25 @@ export default function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter your password"
-                autoComplete="current-password"
+                placeholder="••••••••"
+                autoComplete={activeTab === 'login' ? 'current-password' : 'new-password'}
               />
             </div>
+
+            {activeTab === 'signup' && (
+              <div className="form-field">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
+              </div>
+            )}
 
             {error && (
               <div className="login-error">
@@ -163,19 +237,61 @@ export default function Login() {
               </div>
             )}
 
-            <div className="forgot-password">
-              <a href="#" onClick={(e) => e.preventDefault()}>
-                Forgot Password ?
-              </a>
-            </div>
+            {activeTab === 'login' && (
+              <div className="forgot-password">
+                <a href="#" onClick={(e) => e.preventDefault()}>
+                  Forgot password?
+                </a>
+              </div>
+            )}
 
             <button type="submit" className="signin-button" disabled={loading}>
-              {loading ? 'SIGNING IN...' : 'SIGN IN'}
+              {loading ? (
+                <span className="button-loading">
+                  <span className="spinner"></span>
+                  {activeTab === 'login' ? 'Signing In...' : 'Creating Account...'}
+                </span>
+              ) : (
+                activeTab === 'login' ? 'Sign In' : 'Create Account'
+              )}
             </button>
           </form>
 
-          <div className="signup-link">
-            Don't have an account? <a href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Sign Up</a>
+          {/* Divider */}
+          <div className="auth-divider">
+            <span>or continue with</span>
+          </div>
+
+          {/* Social Login Buttons */}
+          <div className="social-buttons">
+            <button 
+              type="button" 
+              className="social-btn google-btn"
+              onClick={() => handleSocialLogin('Google')}
+            >
+              <svg viewBox="0 0 24 24" className="social-icon">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Google
+            </button>
+            <button 
+              type="button" 
+              className="social-btn github-btn"
+              onClick={() => handleSocialLogin('GitHub')}
+            >
+              <svg viewBox="0 0 24 24" className="social-icon">
+                <path fill="#181717" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+              </svg>
+              GitHub
+            </button>
+          </div>
+
+          {/* Terms */}
+          <div className="auth-terms">
+            By continuing, you agree to our <a href="#" onClick={(e) => e.preventDefault()}>Terms of Service</a> and <a href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
           </div>
         </div>
       </div>
