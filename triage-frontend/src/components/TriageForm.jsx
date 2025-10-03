@@ -45,9 +45,20 @@ export default function TriageForm({ onSubmit, loading }) {
 
   return (
     <form onSubmit={handleSubmit} className="card">
-      <h1 style={{ marginBottom: '1.5rem', color: '#2c3e50' }}>
+      <h1 style={{ marginBottom: '0.5rem', color: '#2c3e50' }}>
         Medical Triage Assessment
       </h1>
+      <p style={{ 
+        fontSize: '0.95rem', 
+        color: '#7c3aed', 
+        marginBottom: '1.5rem',
+        fontWeight: '500',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        <span>🤖</span> AI-Powered by Google Gemini Flash 2.5
+      </p>
       
       <div className="form-group">
         <label htmlFor="symptoms_text">
@@ -143,10 +154,28 @@ export default function TriageForm({ onSubmit, loading }) {
           width: '100%', 
           marginTop: '1rem',
           fontSize: '1.3rem',
-          padding: '1rem'
+          padding: '1rem',
+          background: loading ? '#9ca3af' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          position: 'relative',
+          overflow: 'hidden'
         }}
       >
-        {loading ? 'Analyzing...' : '🔍 Get Triage Assessment'}
+        {loading ? (
+          <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <span style={{ 
+              display: 'inline-block',
+              width: '20px',
+              height: '20px',
+              border: '3px solid rgba(255,255,255,0.3)',
+              borderTop: '3px solid white',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }}></span>
+            AI Analyzing Your Symptoms...
+          </span>
+        ) : (
+          '🤖 Get AI Diagnosis'
+        )}
       </button>
 
       <p style={{ 
