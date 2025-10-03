@@ -15,6 +15,36 @@
   position: relative;
   overflow: hidden;
   padding: 3rem;
+  animation: gradient-shift-bg 8s ease infinite;
+}
+
+@keyframes gradient-shift-bg {
+  0%, 100% {
+    background: linear-gradient(135deg, #9b87f5 0%, #8b7ae6 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #8b7ae6 0%, #9b87f5 100%);
+  }
+}
+
+.login-left-panel::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: move-particles 20s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes move-particles {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
 }
 
 .healthcare-branding {
@@ -27,8 +57,30 @@
   width: 180px;
   height: 180px;
   margin: 0 auto 2rem;
-  animation: float 4s ease-in-out infinite;
+  animation: float 4s ease-in-out infinite, logo-glow 3s ease-in-out infinite;
   filter: drop-shadow(0 10px 30px rgba(139, 127, 209, 0.3));
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.symptom-scan-logo:hover {
+  animation: float 4s ease-in-out infinite, logo-glow 3s ease-in-out infinite, wobble 0.5s ease;
+  transform: scale(1.1);
+}
+
+@keyframes logo-glow {
+  0%, 100% {
+    filter: drop-shadow(0 10px 30px rgba(139, 127, 209, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 15px 40px rgba(144, 198, 116, 0.5));
+  }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg) scale(1.1); }
+  25% { transform: rotate(-5deg) scale(1.1); }
+  75% { transform: rotate(5deg) scale(1.1); }
 }
 
 .logo-svg-main {
@@ -55,16 +107,37 @@
   margin: 0 0 1rem 0;
   letter-spacing: 2px;
   line-height: 1;
+  animation: title-appear 1s ease-out;
+}
+
+@keyframes title-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .symptom-text {
   color: #4a3a6e;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  animation: text-wave 2s ease-in-out infinite;
+}
+
+@keyframes text-wave {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
 }
 
 .scan-text {
   color: #90c674;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  animation: text-wave 2s ease-in-out infinite 0.3s;
 }
 
 .heartbeat-line {
@@ -121,7 +194,7 @@
   position: absolute;
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  animation: pulse-ring 5s ease-in-out infinite;
+  animation: pulse-ring 5s ease-in-out infinite, rotate-circle 20s linear infinite;
 }
 
 .circle-1 {
@@ -130,6 +203,7 @@
   top: 15%;
   left: 10%;
   animation-delay: 0s;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent);
 }
 
 .circle-2 {
@@ -138,6 +212,7 @@
   bottom: 15%;
   left: 8%;
   animation-delay: 1.5s;
+  background: radial-gradient(circle, rgba(144, 198, 116, 0.08), transparent);
 }
 
 .circle-3 {
@@ -146,6 +221,7 @@
   top: 60%;
   right: 15%;
   animation-delay: 3s;
+  background: radial-gradient(circle, rgba(255, 155, 122, 0.08), transparent);
 }
 
 @keyframes pulse-ring {
@@ -154,8 +230,17 @@
     opacity: 0.2;
   }
   50% {
-    transform: scale(1.05);
-    opacity: 0.4;
+    transform: scale(1.15);
+    opacity: 0.5;
+  }
+}
+
+@keyframes rotate-circle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -207,7 +292,16 @@
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
-  animation: slideInRight 0.6s ease-out;
+  animation: slideInRight 0.6s ease-out, card-float 3s ease-in-out infinite;
+}
+
+@keyframes card-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .login-card::before {
@@ -222,10 +316,26 @@
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
+  animation: border-rotate 3s linear infinite;
+}
+
+@keyframes border-rotate {
+  0% {
+    background: linear-gradient(135deg, #8b7fd1, #90c674, #ff9b7a);
+  }
+  33% {
+    background: linear-gradient(135deg, #90c674, #ff9b7a, #8b7fd1);
+  }
+  66% {
+    background: linear-gradient(135deg, #ff9b7a, #8b7fd1, #90c674);
+  }
+  100% {
+    background: linear-gradient(135deg, #8b7fd1, #90c674, #ff9b7a);
+  }
 }
 
 .login-card:hover::before {
-  opacity: 0.1;
+  opacity: 0.15;
 }
 
 @keyframes slideInRight {
@@ -256,6 +366,16 @@
   box-shadow: 0 8px 24px rgba(139, 127, 225, 0.25);
   transition: all 0.4s ease;
   position: relative;
+  animation: icon-bounce 2s ease-in-out infinite;
+}
+
+@keyframes icon-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .user-icon::after {
@@ -351,6 +471,16 @@
   border-color: #8b7fd1;
   background: white;
   box-shadow: 0 0 0 4px rgba(139, 127, 209, 0.1);
+  animation: input-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes input-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(139, 127, 209, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(139, 127, 209, 0.2), 0 0 20px rgba(139, 127, 209, 0.3);
+  }
 }
 
 .form-field input::placeholder {
@@ -471,7 +601,13 @@
 }
 
 .signin-button:hover {
-  animation: glow 2s ease-in-out infinite;
+  animation: glow 2s ease-in-out infinite, button-shake 0.5s ease;
+}
+
+@keyframes button-shake {
+  0%, 100% { transform: translateX(0) translateY(-4px) scale(1.02); }
+  25% { transform: translateX(-2px) translateY(-4px) scale(1.02); }
+  75% { transform: translateX(2px) translateY(-4px) scale(1.02); }
 }
 
 .signup-link {
