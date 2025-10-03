@@ -2,9 +2,16 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import Home from './pages/Home';
 import Demo from './pages/Demo';
 import About from './pages/About';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 function Navigation() {
   const location = useLocation();
+  
+  // Don't show navigation on login page or dashboard
+  if (location.pathname === '/login' || location.pathname === '/dashboard') {
+    return null;
+  }
   
   return (
     <nav>
@@ -24,6 +31,11 @@ function Navigation() {
             About
           </Link>
         </li>
+        <li>
+          <Link to="/login" className={location.pathname === '/login' ? 'active' : ''}>
+            Login
+          </Link>
+        </li>
       </ul>
     </nav>
   );
@@ -37,6 +49,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/demo" element={<Demo />} />
         <Route path="/about" element={<About />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
