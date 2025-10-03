@@ -9,23 +9,42 @@ export default function Login() {
     password: ''
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     // Basic validation
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
+      setLoading(false);
       return;
     }
 
-    // For demo purposes - accept any credentials
-    // In production, you would validate against a backend
-    console.log('Login attempt:', formData.email);
-    
-    // Navigate to dashboard after "login"
-    navigate('/dashboard');
+    // Simulate authentication delay
+    setTimeout(() => {
+      // Check if user is admin
+      // Admin credentials: admin@symptomscan.com or any email containing 'admin'
+      const isAdmin = formData.email.toLowerCase().includes('admin');
+      
+      if (isAdmin) {
+        // Admin user - redirect to dashboard
+        console.log('Admin login successful:', formData.email);
+        localStorage.setItem('userRole', 'admin');
+        localStorage.setItem('userEmail', formData.email);
+        navigate('/dashboard');
+      } else {
+        // Normal user - redirect to main symptom page
+        console.log('User login successful:', formData.email);
+        localStorage.setItem('userRole', 'user');
+        localStorage.setItem('userEmail', formData.email);
+        navigate('/');
+      }
+      
+      setLoading(false);
+    }, 800);
   };
 
   const handleChange = (e) => {
@@ -47,48 +66,53 @@ export default function Login() {
         </div>
         
         <div className="healthcare-branding">
-          <div className="healthcare-icon">
-            <svg viewBox="0 0 200 200" className="symptom-scan-logo">
+          <div className="symptom-scan-logo">
+            <svg viewBox="0 0 200 200" className="logo-svg-main">
               {/* Head outline */}
-              <path d="M 100 40 Q 120 45 135 60 Q 145 75 145 95 L 145 110 Q 148 115 150 122 L 150 135 Q 145 145 140 148 L 140 160 Q 138 168 130 170 L 120 175 Q 100 180 80 175 L 70 170 Q 62 168 60 160 L 60 148 Q 55 145 50 135 L 50 122 Q 52 115 55 110 L 55 95 Q 55 75 65 60 Q 80 45 100 40 Z" 
-                    fill="#e8e0ff" stroke="#8b7fd1" strokeWidth="3" opacity="0.9"/>
+              <path d="M 80 150 Q 70 120 70 90 Q 70 50 95 35 Q 110 28 125 35 Q 150 50 150 90 Q 150 115 142 140" 
+                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="3" />
               
-              {/* Brain/person inside head */}
-              <circle cx="100" cy="75" r="12" fill="#8b7fd1"/>
-              <path d="M 75 95 Q 75 85 85 83 L 100 83 L 115 83 Q 125 85 125 95 Q 125 110 120 120 L 115 130 L 85 130 L 80 120 Q 75 110 75 95 Z" 
-                    fill="#c7b8f3" opacity="0.8"/>
+              {/* Brain circle */}
+              <circle cx="105" cy="75" r="12" fill="#8b7fd1" />
               
-              {/* Medical symbol (caduceus) in magnifying glass */}
-              <circle cx="110" cy="110" r="22" fill="white" stroke="#8b7fd1" strokeWidth="3"/>
-              <circle cx="110" cy="110" r="18" fill="#f8f9fb"/>
+              {/* Magnifying glass circle */}
+              <circle cx="115" cy="100" r="25" fill="white" stroke="#8b7fd1" strokeWidth="3" />
               
-              {/* Caduceus staff */}
-              <line x1="110" y1="100" x2="110" y2="120" stroke="#8b7fd1" strokeWidth="2"/>
-              {/* Caduceus wings */}
-              <path d="M 105 100 Q 100 98 98 100" fill="none" stroke="#9dc88d" strokeWidth="1.5"/>
-              <path d="M 115 100 Q 120 98 122 100" fill="none" stroke="#9dc88d" strokeWidth="1.5"/>
-              {/* Caduceus snakes */}
-              <path d="M 108 105 Q 106 110 108 115" fill="none" stroke="#8b7fd1" strokeWidth="1.5"/>
-              <path d="M 112 105 Q 114 110 112 115" fill="none" stroke="#8b7fd1" strokeWidth="1.5"/>
+              {/* Medical caduceus symbol */}
+              <g transform="translate(115, 100)">
+                <line x1="0" y1="-12" x2="0" y2="12" stroke="#8b7fd1" strokeWidth="2.5" />
+                <path d="M -8 -8 Q 0 0 -8 8" fill="none" stroke="#8b7fd1" strokeWidth="2" />
+                <path d="M 8 -8 Q 0 0 8 8" fill="none" stroke="#8b7fd1" strokeWidth="2" />
+                <circle cx="0" cy="-14" r="3" fill="#8b7fd1" />
+                <line x1="-4" y1="-18" x2="-1" y2="-14" stroke="#8b7fd1" strokeWidth="1.5" />
+                <line x1="4" y1="-18" x2="1" y2="-14" stroke="#8b7fd1" strokeWidth="1.5" />
+              </g>
               
               {/* Magnifying glass handle */}
-              <line x1="128" y1="128" x2="142" y2="142" stroke="#8b7fd1" strokeWidth="4" strokeLinecap="round"/>
+              <line x1="133" y1="118" x2="145" y2="130" stroke="#8b7fd1" strokeWidth="4" strokeLinecap="round" />
               
               {/* Green leaf */}
-              <ellipse cx="75" cy="50" rx="10" ry="15" fill="#9dc88d" transform="rotate(-30 75 50)"/>
-              <path d="M 75 45 Q 75 55 75 60" stroke="#7fa876" strokeWidth="1.5"/>
+              <ellipse cx="65" cy="45" rx="12" ry="20" fill="#90c674" transform="rotate(-30 65 45)" />
+              <line x1="65" y1="35" x2="65" y2="55" stroke="#7ab05f" strokeWidth="1.5" />
             </svg>
           </div>
-          <h1 className="healthcare-title">
-            <span className="title-symptom">Symptom</span>
-            <span className="title-scan">Scan</span>
-          </h1>
-          <div className="tagline-container">
-            <svg className="heartbeat-line" viewBox="0 0 200 20">
-              <path d="M 0 10 L 40 10 L 50 5 L 60 15 L 70 10 L 200 10" 
-                    stroke="#8b7fd1" strokeWidth="2" fill="none" opacity="0.6"/>
-            </svg>
-            <p className="healthcare-subtitle">Analyze. Remedy. Heal.</p>
+          
+          <div className="brand-text">
+            <h1 className="healthcare-title">
+              <span className="symptom-text">Symptom</span>
+              <span className="scan-text">Scan</span>
+            </h1>
+            <div className="heartbeat-line">
+              <svg viewBox="0 0 200 20" className="heartbeat-svg">
+                <polyline points="0,10 40,10 45,5 50,15 55,10 200,10" 
+                          stroke="#8b7fd1" strokeWidth="2" fill="none" />
+              </svg>
+            </div>
+            <p className="healthcare-subtitle">
+              <span className="analyze-text">Analyze.</span>
+              <span className="remedy-text"> Remedy.</span>
+              <span className="heal-text"> Heal.</span>
+            </p>
           </div>
         </div>
       </div>
@@ -145,8 +169,8 @@ export default function Login() {
               </a>
             </div>
 
-            <button type="submit" className="signin-button">
-              SIGN IN
+            <button type="submit" className="signin-button" disabled={loading}>
+              {loading ? 'SIGNING IN...' : 'SIGN IN'}
             </button>
           </form>
 

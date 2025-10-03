@@ -21,6 +21,8 @@ export default function Dashboard() {
   ];
 
   const handleLogout = () => {
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userEmail');
     navigate('/login');
   };
 
