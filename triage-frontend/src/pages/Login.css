@@ -1,0 +1,420 @@
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Left Panel - Healthcare Branding */
+.login-left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #9b87f5 0%, #8b7ae6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 3rem;
+}
+
+.healthcare-branding {
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+
+.healthcare-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 2.5rem;
+  animation: float 3s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diamond-logo {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(45deg);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px);
+  }
+  50% { 
+    transform: translateY(-12px);
+  }
+}
+
+.healthcare-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+}
+
+.healthcare-subtitle {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* Decorative Elements */
+.decorative-elements {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.circle {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  animation: pulse-ring 5s ease-in-out infinite;
+}
+
+.circle-1 {
+  width: 100px;
+  height: 100px;
+  top: 15%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.circle-2 {
+  width: 150px;
+  height: 150px;
+  bottom: 15%;
+  left: 8%;
+  animation-delay: 1.5s;
+}
+
+.circle-3 {
+  width: 60px;
+  height: 60px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 3s;
+}
+
+@keyframes pulse-ring {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.4;
+  }
+}
+
+.plus {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 1.8rem;
+  font-weight: 200;
+  animation: float-plus 6s ease-in-out infinite;
+}
+
+.plus-1 {
+  top: 18%;
+  right: 20%;
+}
+
+.plus-2 {
+  bottom: 30%;
+  right: 12%;
+}
+
+@keyframes float-plus {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translateY(-15px);
+    opacity: 0.4;
+  }
+}
+
+/* Right Panel - Login Form */
+.login-right-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #ff9b7a 0%, #ff8c69 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.login-card {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem 3rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.user-icon {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(135deg, #d4c5f9 0%, #c7b8f3 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(139, 127, 225, 0.25);
+}
+
+.user-svg {
+  width: 52px;
+  height: 52px;
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+}
+
+.welcome-subtitle {
+  font-size: 1.05rem;
+  color: #8e99a8;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Form Styles */
+.login-form {
+  margin-top: 2rem;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.95rem;
+  color: #3a3a3a;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e8ebf0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #f8f9fb;
+  box-sizing: border-box;
+}
+
+.form-field input:hover {
+  border-color: #d0d5dd;
+  background: #ffffff;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #8b7fd1;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(139, 127, 209, 0.1);
+}
+
+.form-field input::placeholder {
+  color: #b0b8c4;
+}
+
+.login-error {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  border: 1px solid #fc8181;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.forgot-password a {
+  color: #8b7fd1;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.forgot-password a:hover {
+  color: #7269bb;
+}
+
+.forgot-password a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background: #8b7fd1;
+  transition: width 0.3s ease;
+}
+
+.forgot-password a:hover::after {
+  width: 100%;
+}
+
+.signin-button {
+  width: 100%;
+  padding: 1.1rem;
+  background: linear-gradient(135deg, #8b7fd1 0%, #7269bb 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(139, 127, 209, 0.35);
+  text-transform: uppercase;
+}
+
+.signin-button:hover {
+  background: linear-gradient(135deg, #7269bb 0%, #6558b1 100%);
+  box-shadow: 0 6px 20px rgba(139, 127, 209, 0.45);
+  transform: translateY(-3px);
+}
+
+.signin-button:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(139, 127, 209, 0.35);
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #7a8291;
+  font-size: 0.95rem;
+}
+
+.signup-link a {
+  color: #8b7fd1;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.signup-link a:hover {
+  color: #7269bb;
+}
+
+.signup-link a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background: #8b7fd1;
+  transition: width 0.3s ease;
+}
+
+.signup-link a:hover::after {
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .login-left-panel {
+    min-height: 40vh;
+    padding: 2rem;
+  }
+
+  .healthcare-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .healthcare-title {
+    font-size: 2rem;
+  }
+
+  .healthcare-subtitle {
+    font-size: 1rem;
+  }
+
+  .login-right-panel {
+    min-height: 60vh;
+  }
+
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.25rem;
+  }
+
+  .welcome-title {
+    font-size: 1.5rem;
+  }
+
+  .user-icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  .healthcare-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Accessibility */
+.form-field input:focus-visible {
+  outline: 3px solid #7c6fd1;
+  outline-offset: 2px;
+}
+
+.signin-button:focus-visible {
+  outline: 3px solid #7c6fd1;
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid #7c6fd1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
