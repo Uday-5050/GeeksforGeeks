@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import { devLogin, startOAuthLogin, getStoredAuth } from '../services/auth';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -13,7 +14,14 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const session = getStoredAuth();
+    if (session?.user?.email) {
+      navigate(session.user.role === 'admin' ? '/dashboard' : '/home', { replace: true });
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -32,46 +40,75 @@ export default function Login() {
       return;
     }
 
-    // Simulate authentication delay
-    setTimeout(() => {
+    try {
+      const session = await devLogin({
+        email: formData.email,
+        password: formData.password,
+        name: formData.email.split('@')[0],
+      });
+
       if (activeTab === 'signup') {
-        // Sign up successful
-        console.log('Sign up successful:', formData.email);
-        localStorage.setItem('userRole', 'user');
-        localStorage.setItem('userEmail', formData.email);
-        localStorage.setItem('userName', formData.email.split('@')[0]);
-        navigate('/user-landing');
+        console.log('Account created:', session.user.email);
       } else {
-        // Login flow
-        const isAdmin = formData.email.toLowerCase().includes('admin');
-        
-        if (isAdmin) {
-          console.log('Admin login successful:', formData.email);
-          localStorage.setItem('userRole', 'admin');
-          localStorage.setItem('userEmail', formData.email);
-          navigate('/dashboard');
-        } else {
-          console.log('User login successful:', formData.email);
-          localStorage.setItem('userRole', 'user');
-          localStorage.setItem('userEmail', formData.email);
-          localStorage.setItem('userName', formData.email.split('@')[0]);
-          navigate('/user-landing');
-        }
+        console.log('Login successful:', session.user.email);
       }
-      
+
+      // Navigate based on role
+      if (session.user.role === 'admin') {
+        navigate('/dashboard');
+      } else {
+        navigate('/user-landing');
+      }
+    } catch (err) {
+      setError(err.message || 'Unable to sign in. Please try again.');
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
-  const handleSocialLogin = (provider) => {
-    console.log(`${provider} login clicked`);
-    // Simulate social login
-    setTimeout(() => {
-      localStorage.setItem('userRole', 'user');
-      localStorage.setItem('userEmail', `user@${provider.toLowerCase()}.com`);
-      localStorage.setItem('userName', `User`);
-      navigate('/user-landing');
-    }, 500);
+  const handleSocialLogin = async (provider) => {
+    setError('');
+    setLoading(true);
+    
+    console.log(`[OAuth] Starting ${provider} login...`);
+    console.log(`[OAuth] API_BASE_URL: http://localhost:8000`);
+    
+    try {
+      console.log(`[OAuth] Calling startOAuthLogin for ${provider}...`);
+      const result = await startOAuthLogin(provider.toLowerCase());
+      console.log(`[OAuth] Success! Got auth_url:`, result);
+      
+      const { auth_url: authUrl } = result;
+      if (!authUrl) {
+        throw new Error('No auth_url received from backend');
+      }
+      
+      console.log(`[OAuth] Redirecting to Google...`);
+      window.location.href = authUrl;
+    } catch (err) {
+      console.error(`[OAuth] ${provider} login failed:`, err);
+      console.error(`[OAuth] Error type:`, err.constructor.name);
+      console.error(`[OAuth] Error message:`, err.message);
+      console.error(`[OAuth] Error stack:`, err.stack);
+      
+      // Check if it's a 503 error (OAuth not configured)
+      if (err.message?.includes('not configured') || err.message?.includes('503')) {
+        setError(
+          `${provider} login is not configured yet. ` +
+          `Please use the email login above or configure ${provider} OAuth in the backend .env file. ` +
+          `See AUTHENTICATION_SETUP.md for instructions.`
+        );
+      } else if (err.message?.includes('fetch')) {
+        setError(
+          `Cannot connect to backend server. ` +
+          `Make sure both frontend and backend servers are running. ` +
+          `Backend should be at http://localhost:8000`
+        );
+      } else {
+        setError(err.message || `${provider} login is currently unavailable. Please use email login above.`);
+      }
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -94,59 +131,24 @@ export default function Login() {
         
         <div className="healthcare-branding">
           <div className="symptom-scan-logo">
-            <svg viewBox="0 0 240 240" className="logo-svg-main" style={{width: '280px', height: '280px'}}>
-              {/* Head outline with profile */}
-              <path d="M 140 200 Q 145 185 148 170 L 160 172 Q 165 150 165 130 Q 165 90 145 65 Q 130 45 105 45 Q 80 45 65 65 Q 45 90 45 130 Q 45 160 55 185 Q 60 195 70 200" 
-                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="3.5" />
-              
-              {/* Inner head detail */}
-              <ellipse cx="100" cy="110" rx="35" ry="45" fill="#d4c5f0" opacity="0.5" />
-              
-              {/* Brain/person circle */}
-              <circle cx="100" cy="85" r="16" fill="#8b7fd1" />
-              
-              {/* Magnifying glass background circle */}
-              <circle cx="120" cy="130" r="38" fill="white" stroke="#8b7fd1" strokeWidth="4" />
-              
-              {/* Medical caduceus symbol - larger */}
-              <g transform="translate(120, 130)">
-                {/* Central staff */}
-                <line x1="0" y1="-18" x2="0" y2="18" stroke="#8b7fd1" strokeWidth="3" />
-                {/* Snake 1 */}
-                <path d="M -12 -12 Q -2 -6 -12 0 Q -2 6 -12 12" fill="none" stroke="#8b7fd1" strokeWidth="2.5" />
-                {/* Snake 2 */}
-                <path d="M 12 -12 Q 2 -6 12 0 Q 2 6 12 12" fill="none" stroke="#8b7fd1" strokeWidth="2.5" />
-                {/* Top circle */}
-                <circle cx="0" cy="-20" r="4" fill="#8b7fd1" />
-                {/* Wings */}
-                <path d="M -2 -22 L -8 -26 L -4 -20" fill="#8b7fd1" />
-                <path d="M 2 -22 L 8 -26 L 4 -20" fill="#8b7fd1" />
-              </g>
-              
-              {/* Magnifying glass handle - thicker */}
-              <line x1="148" y1="158" x2="165" y2="175" stroke="#8b7fd1" strokeWidth="5" strokeLinecap="round" />
-              
-              {/* Green leaf - larger */}
-              <ellipse cx="58" cy="60" rx="15" ry="25" fill="#90c674" transform="rotate(-25 58 60)" />
-              <line x1="58" y1="48" x2="58" y2="72" stroke="#7ab05f" strokeWidth="2" />
-            </svg>
+            <img src="/curemind-logo.png" alt="CureMind Logo" className="login-logo-image" />
           </div>
           
           <div className="brand-text">
             <h1 className="healthcare-title">
-              <span className="symptom-text">Symptom</span>
-              <span className="scan-text">Scan</span>
+              <span className="symptom-text">Cure</span>
+              <span className="scan-text">Mind</span>
             </h1>
             <div className="heartbeat-line">
               <svg viewBox="0 0 200 20" className="heartbeat-svg">
                 <polyline points="0,10 40,10 45,5 50,15 55,10 200,10" 
-                          stroke="#8b7fd1" strokeWidth="2" fill="none" />
+                          stroke="#4a9eff" strokeWidth="2" fill="none" />
               </svg>
             </div>
             <p className="healthcare-subtitle">
-              <span className="analyze-text">Analyze.</span>
-              <span className="remedy-text"> Remedy.</span>
-              <span className="heal-text"> Heal.</span>
+              <span className="analyze-text">Symptom Analysis.</span>
+              <span className="remedy-text"> Personalized Cures.</span>
+              <span className="heal-text"> Data-Driven Insights.</span>
             </p>
           </div>
         </div>
@@ -156,51 +158,16 @@ export default function Login() {
         <div className="login-card">
           {/* Logo */}
           <div className="card-logo">
-            <svg viewBox="0 0 180 180" className="card-logo-svg" style={{width: '140px', height: '140px'}}>
-              {/* Head outline with profile */}
-              <path d="M 105 150 Q 108 140 110 128 L 118 129 Q 122 113 122 98 Q 122 68 108 49 Q 97 34 78 34 Q 60 34 49 49 Q 35 68 35 98 Q 35 120 41 139 Q 45 146 52 150" 
-                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="3" />
-              
-              {/* Inner head detail */}
-              <ellipse cx="75" cy="83" rx="26" ry="34" fill="#d4c5f0" opacity="0.5" />
-              
-              {/* Brain/person circle */}
-              <circle cx="75" cy="64" r="12" fill="#8b7fd1" />
-              
-              {/* Magnifying glass background circle */}
-              <circle cx="90" cy="98" r="28" fill="white" stroke="#8b7fd1" strokeWidth="3" />
-              
-              {/* Medical caduceus symbol */}
-              <g transform="translate(90, 98)">
-                {/* Central staff */}
-                <line x1="0" y1="-13" x2="0" y2="13" stroke="#8b7fd1" strokeWidth="2.5" />
-                {/* Snake 1 */}
-                <path d="M -9 -9 Q -1.5 -4.5 -9 0 Q -1.5 4.5 -9 9" fill="none" stroke="#8b7fd1" strokeWidth="2" />
-                {/* Snake 2 */}
-                <path d="M 9 -9 Q 1.5 -4.5 9 0 Q 1.5 4.5 9 9" fill="none" stroke="#8b7fd1" strokeWidth="2" />
-                {/* Top circle */}
-                <circle cx="0" cy="-15" r="3" fill="#8b7fd1" />
-                {/* Wings */}
-                <path d="M -1.5 -16.5 L -6 -19.5 L -3 -15" fill="#8b7fd1" />
-                <path d="M 1.5 -16.5 L 6 -19.5 L 3 -15" fill="#8b7fd1" />
-              </g>
-              
-              {/* Magnifying glass handle */}
-              <line x1="111" y1="119" x2="123" y2="131" stroke="#8b7fd1" strokeWidth="4" strokeLinecap="round" />
-              
-              {/* Green leaf */}
-              <ellipse cx="43" cy="45" rx="11" ry="19" fill="#90c674" transform="rotate(-25 43 45)" />
-              <line x1="43" y1="36" x2="43" y2="54" stroke="#7ab05f" strokeWidth="1.5" />
-            </svg>
+            <img src="/curemind-logo.png" alt="CureMind Logo" className="card-logo-image" />
           </div>
 
           {/* Welcome Text */}
           <div className="card-welcome">
             <h1 className="card-welcome-title">
-              Welcome to <span className="gradient-text">SymptomScan</span>
+              Welcome to <span className="gradient-text">CureMind</span>
             </h1>
             <p className="card-welcome-subtitle">
-              💚 Analyze. Remedy. Heal.
+              � Symptom Analysis • Personalized Cures • Data-Driven Insights
             </p>
           </div>
 
@@ -301,6 +268,7 @@ export default function Login() {
               type="button" 
               className="social-btn google-btn"
               onClick={() => handleSocialLogin('Google')}
+              disabled={loading}
             >
               <svg viewBox="0 0 24 24" className="social-icon">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -314,12 +282,26 @@ export default function Login() {
               type="button" 
               className="social-btn github-btn"
               onClick={() => handleSocialLogin('GitHub')}
+              disabled={loading}
             >
               <svg viewBox="0 0 24 24" className="social-icon">
                 <path fill="#181717" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
               </svg>
               GitHub
             </button>
+          </div>
+
+          {/* Development Note */}
+          <div className="dev-login-note" style={{ 
+            marginTop: '12px', 
+            padding: '10px', 
+            backgroundColor: '#f0f7ff', 
+            borderRadius: '8px',
+            fontSize: '13px',
+            color: '#555',
+            border: '1px solid #d0e7ff'
+          }}>
+            💡 <strong>Development Mode:</strong> Use email login above for quick testing. OAuth providers require setup (see AUTHENTICATION_SETUP.md).
           </div>
 
           {/* Terms */}

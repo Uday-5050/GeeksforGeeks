@@ -69,8 +69,8 @@ function UserLanding() {
       {/* Header */}
       <header className="landing-header">
         <div className="landing-logo">
-          <div className="logo-icon">🏥</div>
-          <span className="logo-text">Health Check</span>
+          <img src="/curemind-logo.png" alt="CureMind Logo" className="logo-image" />
+          <span className="logo-text">CureMind</span>
         </div>
         <div className="header-actions">
           <div className="user-info">
@@ -88,10 +88,10 @@ function UserLanding() {
         {/* Hero Section */}
         <section className="hero-section">
           <h1 className="hero-title">
-            Your Personal Health Assistant
+            CureMind - Your Personal Health Assistant
           </h1>
           <p className="hero-subtitle">
-            AI-powered symptom checking and health management at your fingertips
+            Symptom Analysis, Personalized Cures • Data-Driven Health Insights
           </p>
         </section>
 
@@ -157,7 +157,7 @@ function UserLanding() {
 
       {/* Footer */}
       <footer className="landing-footer">
-        <p>© 2025 Health Check. Your health, our priority.</p>
+        <p>© 2025 CureMind. Symptom Analysis, Personalized Cures - Data-Driven Health Insights.</p>
         <div className="footer-links">
           <a href="#">Privacy Policy</a>
           <a href="#">Terms of Service</a>

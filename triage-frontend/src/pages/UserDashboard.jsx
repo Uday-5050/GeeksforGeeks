@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UserDashboard.css';
 
@@ -7,12 +7,10 @@ export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState('symptom-checker');
   const [symptoms, setSymptoms] = useState('');
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [history, setHistory] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const recognitionRef = useRef(null);
 
   // Common symptoms for quick selection
   const commonSymptoms = [
@@ -40,56 +38,14 @@ export default function UserDashboard() {
     { code: 'kn', name: 'ಕನ್ನಡ', flag: '🇮🇳' },
   ];
 
-  // Initialize speech recognition
+  // Initialize component
   useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = selectedLanguage === 'en' ? 'en-US' : 
-                                      selectedLanguage === 'hi' ? 'hi-IN' :
-                                      selectedLanguage === 'ta' ? 'ta-IN' :
-                                      selectedLanguage === 'te' ? 'te-IN' :
-                                      selectedLanguage === 'kn' ? 'kn-IN' : 'en-US';
-
-      recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setSymptoms(prev => prev + ' ' + transcript);
-        setIsRecording(false);
-      };
-
-      recognitionRef.current.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        setIsRecording(false);
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsRecording(false);
-      };
-    }
-
     // Load history from localStorage
     const savedHistory = localStorage.getItem('symptom-history');
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory));
     }
-  }, [selectedLanguage]);
-
-  const toggleVoiceInput = () => {
-    if (!recognitionRef.current) {
-      alert('Voice input is not supported in your browser. Please use Chrome or Edge.');
-      return;
-    }
-
-    if (isRecording) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
-    } else {
-      recognitionRef.current.start();
-      setIsRecording(true);
-    }
-  };
+  }, []);
 
   const toggleSymptom = (symptom) => {
     setSelectedSymptoms(prev => {
@@ -241,14 +197,9 @@ export default function UserDashboard() {
       <aside className="user-sidebar">
         <div className="sidebar-header">
           <div className="logo-user-dashboard">
-            <svg viewBox="0 0 100 100" className="logo-svg-user">
-              <path d="M50 20 L65 35 L50 50 L35 35 Z" fill="white" opacity="0.9"/>
-              <path d="M35 35 L50 50 L35 65 L20 50 Z" fill="white" opacity="0.7"/>
-              <path d="M50 50 L65 65 L50 80 L35 65 Z" fill="white" opacity="0.9"/>
-              <path d="M65 35 L80 50 L65 65 L50 50 Z" fill="white" opacity="0.7"/>
-            </svg>
+            <img src="/curemind-logo.png" alt="CureMind Logo" className="logo-image-dashboard" />
           </div>
-          <h2>HEALTH CHECK</h2>
+          <h2>CUREMIND</h2>
         </div>
 
         <nav className="user-nav">
@@ -346,19 +297,6 @@ export default function UserDashboard() {
                       rows="4"
                       className="symptom-textarea"
                     />
-                  </div>
-
-                  {/* Voice Input */}
-                  <div className="voice-input-section">
-                    <button 
-                      className={`voice-btn ${isRecording ? 'recording' : ''}`}
-                      onClick={toggleVoiceInput}
-                    >
-                      {isRecording ? '⏹️ Stop Recording' : '🎤 Voice Input'}
-                    </button>
-                    {isRecording && (
-                      <span className="recording-indicator">🔴 Listening...</span>
-                    )}
                   </div>
 
                   {/* Quick Select Symptoms */}
@@ -652,14 +590,6 @@ export default function UserDashboard() {
                 <label className="settings-toggle">
                   <input type="checkbox" defaultChecked />
                   <span>Symptom tracking notifications</span>
-                </label>
-              </div>
-
-              <div className="settings-group">
-                <h3>🎤 Voice Input</h3>
-                <label className="settings-toggle">
-                  <input type="checkbox" defaultChecked />
-                  <span>Enable voice recognition</span>
                 </label>
               </div>
 

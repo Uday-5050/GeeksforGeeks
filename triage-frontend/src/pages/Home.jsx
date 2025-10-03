@@ -4,12 +4,15 @@ import TriageForm from '../components/TriageForm';
 import TriageResult from '../components/TriageResult';
 import { callTriageAPI, buildTriagePayload } from '../services/api';
 import './Home.css';
+import { isGeminiConfigured } from '../services/gemini';
+import { getStoredAuth, logout } from '../services/auth';
 
 export default function Home() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
+  const [geminiEnabled, setGeminiEnabled] = useState(false);
   const [patientData, setPatientData] = useState({
     name: 'John Doe',
     age: 32,
@@ -34,13 +37,17 @@ export default function Home() {
 
   useEffect(() => {
     // Check if user is logged in
-    const userRole = localStorage.getItem('userRole');
-    const userEmail = localStorage.getItem('userEmail');
-    
-    if (userRole && userEmail) {
-      setUserInfo({ role: userRole, email: userEmail });
+    const session = getStoredAuth();
+    if (!session || !session.user) {
+      navigate('/login', { replace: true });
+      return;
     }
-  }, []);
+    
+    setUserInfo({ role: session.user.role, email: session.user.email, name: session.user.name || session.user.email });
+    
+    // Check if Gemini is configured
+    setGeminiEnabled(isGeminiConfigured());
+  }, [navigate]);
 
   const handleSubmit = async (formData) => {
     setLoading(true);
@@ -48,10 +55,24 @@ export default function Home() {
     
     try {
       const payload = buildTriagePayload(formData);
-      const response = await callTriageAPI(payload);
+      // Pass both payload (for backend) and original formData (for Gemini)
+      const response = await callTriageAPI(payload, formData);
       setResult(response);
     } catch (err) {
-      setError('Failed to get triage assessment. Please check your connection and try again.');
+      let errorMessage = 'Failed to get triage assessment. ';
+      
+      if (err.message.includes('Gemini API key')) {
+        errorMessage = '🔑 Gemini API key not configured. Please add your API key to the .env file to enable AI diagnosis. See GEMINI_SETUP.md for instructions.';
+      } else if (err.message.includes('Failed to get AI diagnosis')) {
+        errorMessage = '⚠️ AI analysis temporarily unavailable. Please try again or check your API key configuration.';
+      } else if (err.message.includes('Unauthorized')) {
+        errorMessage = '🔑 Your session has expired. Please log in again.';
+        setTimeout(() => navigate('/login', { replace: true }), 2000);
+      } else {
+        errorMessage += 'Please check your connection and try again.';
+      }
+      
+      setError(errorMessage);
       console.error('Triage error:', err);
     } finally {
       setLoading(false);
@@ -63,15 +84,86 @@ export default function Home() {
     setError(null);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
-    setUserInfo(null);
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (err) {
+      console.error('Logout error', err);
+      navigate('/login', { replace: true });
+    }
   };
 
   return (
     <div className="home-container">
+      {/* AI Status Banner */}
+      {geminiEnabled && (
+        <div style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          padding: '12px 20px',
+          borderRadius: '12px',
+          marginBottom: '15px',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+          animation: 'slideDown 0.5s ease-out'
+        }}>
+          <span style={{ fontSize: '24px' }}>🤖</span>
+          <div style={{ flex: 1 }}>
+            <strong style={{ fontSize: '16px', display: 'block', marginBottom: '2px' }}>
+              AI-Powered Diagnosis Active
+            </strong>
+            <span style={{ fontSize: '13px', opacity: 0.9 }}>
+              Using Google Gemini Flash 2.5 for intelligent symptom analysis
+            </span>
+          </div>
+          <span style={{ 
+            background: 'rgba(255,255,255,0.2)', 
+            padding: '4px 12px', 
+            borderRadius: '20px',
+            fontSize: '12px',
+            fontWeight: '600'
+          }}>
+            ⚡ LIVE
+          </span>
+        </div>
+      )}
+      
+      {/* Setup Instructions Banner */}
+      {!geminiEnabled && (
+        <div style={{
+          background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+          padding: '15px 20px',
+          borderRadius: '12px',
+          marginBottom: '15px',
+          color: '#78350f',
+          border: '2px solid #fcd34d',
+          boxShadow: '0 4px 15px rgba(251, 191, 36, 0.2)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+            <span style={{ fontSize: '24px' }}>💡</span>
+            <div style={{ flex: 1 }}>
+              <strong style={{ fontSize: '16px', display: 'block', marginBottom: '6px' }}>
+                Enable AI-Powered Diagnosis
+              </strong>
+              <p style={{ fontSize: '14px', margin: '0 0 8px 0', lineHeight: '1.5' }}>
+                Get instant, intelligent symptom analysis with Google Gemini AI!
+              </p>
+              <ol style={{ fontSize: '13px', margin: '8px 0 0 0', paddingLeft: '20px', lineHeight: '1.6' }}>
+                <li>Get your FREE API key: <a href="https://aistudio.google.com/app/apikey" target="_blank" style={{ color: '#78350f', fontWeight: '600', textDecoration: 'underline' }}>aistudio.google.com</a></li>
+                <li>Add it to <code style={{ background: '#fed7aa', padding: '2px 6px', borderRadius: '3px' }}>.env</code> file</li>
+                <li>Restart the server</li>
+              </ol>
+              <p style={{ fontSize: '12px', margin: '8px 0 0 0', fontStyle: 'italic', opacity: 0.9 }}>
+                📖 See GEMINI_SETUP.md for detailed instructions
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Floating Logout Button */}
       {userInfo && (
         <button onClick={handleLogout} className="floating-logout-btn" title="Logout">

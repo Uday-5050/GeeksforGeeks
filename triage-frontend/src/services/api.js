@@ -1,7 +1,6 @@
 import { analyzeWithGemini, isGeminiConfigured } from './gemini';
-
-// API configuration - Change this to your backend URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+import { API_BASE_URL } from './config';
+import { getAccessToken } from './auth';
 const USE_GEMINI_FIRST = true; // Set to false to always use backend API
 
 /**
@@ -30,15 +29,26 @@ export async function callTriageAPI(payload, originalFormData = null) {
   
   // Fall back to backend API
   try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    const token = getAccessToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}/api/triage`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
+      credentials: 'include',
       body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Unauthorized - please sign in again');
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
