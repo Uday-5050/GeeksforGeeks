@@ -4,6 +4,8 @@ import Demo from './pages/Demo';
 import About from './pages/About';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import UserDashboard from './pages/UserDashboard';
+import UserLanding from './pages/UserLanding';
 
 function Navigation() {
   const location = useLocation();
@@ -52,6 +54,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/user-landing" element={<UserLanding />} />
+        <Route path="/user-dashboard" element={<UserDashboard />} />
       </Routes>
     </Router>
   );

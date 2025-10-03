@@ -39,7 +39,8 @@ export default function Login() {
         console.log('Sign up successful:', formData.email);
         localStorage.setItem('userRole', 'user');
         localStorage.setItem('userEmail', formData.email);
-        navigate('/home');
+        localStorage.setItem('userName', formData.email.split('@')[0]);
+        navigate('/user-landing');
       } else {
         // Login flow
         const isAdmin = formData.email.toLowerCase().includes('admin');
@@ -53,7 +54,8 @@ export default function Login() {
           console.log('User login successful:', formData.email);
           localStorage.setItem('userRole', 'user');
           localStorage.setItem('userEmail', formData.email);
-          navigate('/home');
+          localStorage.setItem('userName', formData.email.split('@')[0]);
+          navigate('/user-landing');
         }
       }
       
@@ -67,7 +69,8 @@ export default function Login() {
     setTimeout(() => {
       localStorage.setItem('userRole', 'user');
       localStorage.setItem('userEmail', `user@${provider.toLowerCase()}.com`);
-      navigate('/home');
+      localStorage.setItem('userName', `User`);
+      navigate('/user-landing');
     }, 500);
   };
 

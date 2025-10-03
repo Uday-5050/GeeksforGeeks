@@ -10,6 +10,9 @@ from pydantic import BaseModel, Field
 import openai
 from dotenv import load_dotenv
 
+# Import admin backend
+from admin_backend import admin_router
+
 # Load environment variables
 load_dotenv()
 
@@ -54,6 +57,9 @@ def init_db():
 
 # Initialize database on startup
 init_db()
+
+# Include admin router for medical dashboard
+app.include_router(admin_router)
 
 # Load rules from YAML
 def load_rules():
