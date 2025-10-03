@@ -11,6 +11,25 @@ export default function TriageResult({ result, onReset }) {
 
   return (
     <div className="triage-result">
+      {result.ai_powered && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1))',
+          border: '2px solid rgba(102, 126, 234, 0.3)',
+          padding: '12px 16px',
+          borderRadius: '10px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '0.95rem'
+        }}>
+          <span style={{ fontSize: '20px' }}>✨</span>
+          <span style={{ color: '#5b21b6', fontWeight: '600' }}>
+            AI-Powered Analysis by Google Gemini Flash 2.5
+          </span>
+        </div>
+      )}
+      
       <div className={getBannerClass()}>
         {result.triage_level.replace('_', ' ')}
       </div>

@@ -1,12 +1,34 @@
+import { analyzeWithGemini, isGeminiConfigured } from './gemini';
+
 // API configuration - Change this to your backend URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const USE_GEMINI_FIRST = true; // Set to false to always use backend API
 
 /**
- * Call the triage API endpoint
+ * Call the triage API endpoint (with Gemini AI integration)
  * @param {Object} payload - The triage request payload
+ * @param {Object} originalFormData - The original form data (needed for Gemini)
  * @returns {Promise<Object>} - The triage response
  */
-export async function callTriageAPI(payload) {
+export async function callTriageAPI(payload, originalFormData = null) {
+  // Try Gemini AI first if configured
+  if (USE_GEMINI_FIRST && isGeminiConfigured()) {
+    try {
+      console.log('🤖 Using Gemini AI for analysis...');
+      // Pass original form data to Gemini, not the transformed payload
+      const dataForGemini = originalFormData || payload;
+      const geminiResult = await analyzeWithGemini(dataForGemini);
+      console.log('✅ Gemini analysis successful');
+      return geminiResult;
+    } catch (geminiError) {
+      console.warn('⚠️ Gemini analysis failed, falling back to backend:', geminiError.message);
+      // Fall through to backend API
+    }
+  } else if (!isGeminiConfigured()) {
+    console.log('ℹ️ Gemini not configured, using backend API');
+  }
+  
+  // Fall back to backend API
   try {
     const response = await fetch(`${API_BASE_URL}/api/triage`, {
       method: 'POST',
