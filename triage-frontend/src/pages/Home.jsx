@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TriageForm from '../components/TriageForm';
 import TriageResult from '../components/TriageResult';
 import { callTriageAPI, buildTriagePayload } from '../services/api';
+import './Home.css';
 
 export default function Home() {
   const [result, setResult] = useState(null);
@@ -50,66 +51,56 @@ export default function Home() {
   };
 
   return (
-    <div className="container">
+    <div className="home-container">
+      {/* Floating Logout Button */}
       {userInfo && (
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(139, 127, 209, 0.1), rgba(255, 155, 122, 0.1))',
-          padding: '15px 20px',
-          borderRadius: '12px',
-          marginBottom: '20px',
-          border: '1px solid rgba(139, 127, 209, 0.2)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
-        }}>
-          <div>
-            <p style={{ margin: 0, fontSize: '14px', color: '#666', fontWeight: '500' }}>
-              👤 Logged in as: <strong style={{ color: '#8b7fd1' }}>{userInfo.email}</strong>
-            </p>
-            <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#888' }}>
-              {userInfo.role === 'user' ? '🩺 Patient Portal' : '👨‍⚕️ Admin Portal'}
-            </p>
-          </div>
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: '8px 20px',
-              background: 'linear-gradient(135deg, #8b7fd1, #7269bb)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '600',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 8px rgba(139, 127, 209, 0.3)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 4px 12px rgba(139, 127, 209, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 2px 8px rgba(139, 127, 209, 0.3)';
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      )}
-      
-      {error && (
-        <div className="error">
-          <strong>Error:</strong> {error}
-        </div>
+        <button onClick={handleLogout} className="floating-logout-btn" title="Logout">
+          <span className="logout-icon">🚪</span>
+          <span className="logout-text">Logout</span>
+        </button>
       )}
 
-      {!result ? (
-        <TriageForm onSubmit={handleSubmit} loading={loading} />
-      ) : (
-        <TriageResult result={result} onReset={handleReset} />
+      {/* User Header */}
+      {userInfo && (
+        <header className="user-header">
+          <div className="user-header-content">
+            <div className="user-info-section">
+              <div className="user-avatar">
+                👤
+              </div>
+              <div className="user-details">
+                <h2>{userInfo.email}</h2>
+                <p>
+                  <span>{userInfo.role === 'user' ? '🩺 Patient Portal' : '👨‍⚕️ Admin Portal'}</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </header>
       )}
+
+      {/* Main Content */}
+      <main className="home-main">
+        {/* Welcome Banner */}
+        <div className="welcome-banner">
+          <h1>Welcome to SymptomScan</h1>
+          <p>Get a quick medical assessment based on your symptoms. Our AI-powered system will help determine the urgency of your condition and recommend the appropriate level of care.</p>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="error-message">
+            <strong>⚠️ Error:</strong> {error}
+          </div>
+        )}
+
+        {/* Triage Form or Results */}
+        {!result ? (
+          <TriageForm onSubmit={handleSubmit} loading={loading} />
+        ) : (
+          <TriageResult result={result} onReset={handleReset} />
+        )}
+      </main>
     </div>
   );
 }

@@ -8,8 +8,8 @@ import Dashboard from './pages/Dashboard';
 function Navigation() {
   const location = useLocation();
   
-  // Don't show navigation on login page or dashboard
-  if (location.pathname === '/login' || location.pathname === '/dashboard') {
+  // Don't show navigation on login, dashboard, or home page
+  if (location.pathname === '/login' || location.pathname === '/dashboard' || location.pathname === '/home') {
     return null;
   }
   
