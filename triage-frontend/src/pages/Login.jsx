@@ -53,7 +53,12 @@ export default function Login() {
         console.log('Login successful:', session.user.email);
       }
 
-      navigate(session.user.role === 'admin' ? '/dashboard' : '/home');
+      // Navigate based on role
+      if (session.user.role === 'admin') {
+        navigate('/dashboard');
+      } else {
+        navigate('/user-landing');
+      }
     } catch (err) {
       setError(err.message || 'Unable to sign in. Please try again.');
     } finally {
@@ -126,51 +131,24 @@ export default function Login() {
         
         <div className="healthcare-branding">
           <div className="symptom-scan-logo">
-            <svg viewBox="0 0 200 200" className="logo-svg-main">
-              {/* Head outline */}
-              <path d="M 80 150 Q 70 120 70 90 Q 70 50 95 35 Q 110 28 125 35 Q 150 50 150 90 Q 150 115 142 140" 
-                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="3" />
-              
-              {/* Brain circle */}
-              <circle cx="105" cy="75" r="12" fill="#8b7fd1" />
-              
-              {/* Magnifying glass circle */}
-              <circle cx="115" cy="100" r="25" fill="white" stroke="#8b7fd1" strokeWidth="3" />
-              
-              {/* Medical caduceus symbol */}
-              <g transform="translate(115, 100)">
-                <line x1="0" y1="-12" x2="0" y2="12" stroke="#8b7fd1" strokeWidth="2.5" />
-                <path d="M -8 -8 Q 0 0 -8 8" fill="none" stroke="#8b7fd1" strokeWidth="2" />
-                <path d="M 8 -8 Q 0 0 8 8" fill="none" stroke="#8b7fd1" strokeWidth="2" />
-                <circle cx="0" cy="-14" r="3" fill="#8b7fd1" />
-                <line x1="-4" y1="-18" x2="-1" y2="-14" stroke="#8b7fd1" strokeWidth="1.5" />
-                <line x1="4" y1="-18" x2="1" y2="-14" stroke="#8b7fd1" strokeWidth="1.5" />
-              </g>
-              
-              {/* Magnifying glass handle */}
-              <line x1="133" y1="118" x2="145" y2="130" stroke="#8b7fd1" strokeWidth="4" strokeLinecap="round" />
-              
-              {/* Green leaf */}
-              <ellipse cx="65" cy="45" rx="12" ry="20" fill="#90c674" transform="rotate(-30 65 45)" />
-              <line x1="65" y1="35" x2="65" y2="55" stroke="#7ab05f" strokeWidth="1.5" />
-            </svg>
+            <img src="/curemind-logo.png" alt="CureMind Logo" className="login-logo-image" />
           </div>
           
           <div className="brand-text">
             <h1 className="healthcare-title">
-              <span className="symptom-text">Symptom</span>
-              <span className="scan-text">Scan</span>
+              <span className="symptom-text">Cure</span>
+              <span className="scan-text">Mind</span>
             </h1>
             <div className="heartbeat-line">
               <svg viewBox="0 0 200 20" className="heartbeat-svg">
                 <polyline points="0,10 40,10 45,5 50,15 55,10 200,10" 
-                          stroke="#8b7fd1" strokeWidth="2" fill="none" />
+                          stroke="#4a9eff" strokeWidth="2" fill="none" />
               </svg>
             </div>
             <p className="healthcare-subtitle">
-              <span className="analyze-text">Analyze.</span>
-              <span className="remedy-text"> Remedy.</span>
-              <span className="heal-text"> Heal.</span>
+              <span className="analyze-text">Symptom Analysis.</span>
+              <span className="remedy-text"> Personalized Cures.</span>
+              <span className="heal-text"> Data-Driven Insights.</span>
             </p>
           </div>
         </div>
@@ -180,29 +158,16 @@ export default function Login() {
         <div className="login-card">
           {/* Logo */}
           <div className="card-logo">
-            <svg viewBox="0 0 120 120" className="card-logo-svg">
-              <path d="M 40 90 Q 35 70 35 50 Q 35 25 55 15 Q 65 10 75 15 Q 95 25 95 50 Q 95 67 89 83" 
-                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="2.5" />
-              <circle cx="60" cy="42" r="8" fill="#8b7fd1" />
-              <circle cx="68" cy="58" r="15" fill="white" stroke="#8b7fd1" strokeWidth="2.5" />
-              <g transform="translate(68, 58)">
-                <line x1="0" y1="-7" x2="0" y2="7" stroke="#8b7fd1" strokeWidth="2" />
-                <path d="M -5 -5 Q 0 0 -5 5" fill="none" stroke="#8b7fd1" strokeWidth="1.5" />
-                <path d="M 5 -5 Q 0 0 5 5" fill="none" stroke="#8b7fd1" strokeWidth="1.5" />
-                <circle cx="0" cy="-9" r="2" fill="#8b7fd1" />
-              </g>
-              <line x1="79" y1="69" x2="88" y2="78" stroke="#8b7fd1" strokeWidth="3" strokeLinecap="round" />
-              <ellipse cx="35" cy="25" rx="8" ry="13" fill="#90c674" transform="rotate(-30 35 25)" />
-            </svg>
+            <img src="/curemind-logo.png" alt="CureMind Logo" className="card-logo-image" />
           </div>
 
           {/* Welcome Text */}
           <div className="card-welcome">
             <h1 className="card-welcome-title">
-              Welcome to <span className="gradient-text">SymptomScan</span>
+              Welcome to <span className="gradient-text">CureMind</span>
             </h1>
             <p className="card-welcome-subtitle">
-              💚 Analyze. Remedy. Heal.
+              � Symptom Analysis • Personalized Cures • Data-Driven Insights
             </p>
           </div>
 
