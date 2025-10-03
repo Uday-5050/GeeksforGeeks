@@ -1,0 +1,180 @@
+rules:
+  # Priority 1: RED - Life-threatening emergencies (call 911 immediately)
+  - id: "RED_001"
+    priority: 1
+    category: "RED"
+    triage_label: "EMERGENCY_911"
+    name: "Cardiac Emergency"
+    conditions:
+      - symptoms: ["chest pain", "heart attack", "cardiac arrest", "severe chest pressure"]
+        severity: ["severe", "critical"]
+      - symptoms: ["shortness of breath"]
+        severity: ["severe", "critical"]
+        additional_factors: ["chest pain", "dizziness", "sweating"]
+    explanation_template: "Severe cardiac symptoms require immediate emergency care. Call 911 now."
+    
+  - id: "RED_002"
+    priority: 2
+    category: "RED" 
+    triage_label: "EMERGENCY_911"
+    name: "Stroke Symptoms"
+    conditions:
+      - symptoms: ["stroke", "face drooping", "arm weakness", "speech difficulty", "sudden confusion"]
+        severity: ["any"]
+      - symptoms: ["severe headache", "sudden vision loss", "loss of balance"]
+        severity: ["severe", "sudden"]
+    explanation_template: "These symptoms may indicate a stroke. Time is critical - call 911 immediately."
+    
+  - id: "RED_003"
+    priority: 3
+    category: "RED"
+    triage_label: "EMERGENCY_911" 
+    name: "Severe Breathing Difficulties"
+    conditions:
+      - symptoms: ["difficulty breathing", "shortness of breath", "cannot breathe"]
+        severity: ["severe", "critical"]
+      - symptoms: ["choking", "allergic reaction"]
+        severity: ["any"]
+    explanation_template: "Severe breathing difficulties require immediate emergency medical attention."
+
+  # Priority 2: URGENT - Serious conditions needing prompt care (within 2-4 hours)
+  - id: "URG_001"
+    priority: 4
+    category: "URGENT"
+    triage_label: "URGENT_CARE"
+    name: "Moderate Chest Pain"
+    conditions:
+      - symptoms: ["chest pain", "chest discomfort"]
+        severity: ["moderate", "mild"]
+        duration: ["persistent", "recurring"]
+    explanation_template: "Chest pain should be evaluated promptly. Seek urgent care within 2-4 hours."
+    
+  - id: "URG_002"
+    priority: 5
+    category: "URGENT"
+    triage_label: "URGENT_CARE"
+    name: "High Fever with Concerning Symptoms"
+    conditions:
+      - symptoms: ["fever"]
+        severity: ["high"]
+        additional_factors: ["difficulty breathing", "severe headache", "confusion", "stiff neck"]
+      - symptoms: ["fever"]
+        temperature: [">103°F", ">39.4°C"]
+    explanation_template: "High fever with these symptoms needs prompt medical evaluation."
+    
+  - id: "URG_003"
+    priority: 6
+    category: "URGENT"
+    triage_label: "URGENT_CARE"
+    name: "Severe Pain"
+    conditions:
+      - symptoms: ["severe pain", "abdominal pain", "back pain"]
+        severity: ["severe"]
+        duration: ["persistent", "worsening"]
+      - symptoms: ["headache"]
+        severity: ["severe", "worst ever"]
+    explanation_template: "Severe persistent pain requires urgent medical evaluation."
+
+  # Priority 3: GP - General practitioner care (within 24-48 hours)
+  - id: "GP_001"
+    priority: 7
+    category: "GP"
+    triage_label: "SEE_DOCTOR_24H"
+    name: "Moderate Fever"
+    conditions:
+      - symptoms: ["fever", "temperature"]
+        severity: ["moderate"]
+        duration: ["persistent", ">3 days"]
+      - symptoms: ["fever"]
+        temperature: ["100.4°F-103°F", "38°C-39.4°C"]
+        duration: [">48 hours"]
+    explanation_template: "Persistent moderate fever should be evaluated by your doctor within 24-48 hours."
+    
+  - id: "GP_002"
+    priority: 8
+    category: "GP"
+    triage_label: "SEE_DOCTOR_24H"
+    name: "Persistent Cough with Concerning Features"
+    conditions:
+      - symptoms: ["cough", "persistent cough"]
+        duration: [">2 weeks"]
+      - symptoms: ["cough"]
+        additional_factors: ["blood", "weight loss", "night sweats"]
+    explanation_template: "A persistent cough with these features should be evaluated by your doctor."
+    
+  - id: "GP_003"
+    priority: 9
+    category: "GP"
+    triage_label: "SEE_DOCTOR_24H"
+    name: "Moderate Pain or Discomfort"
+    conditions:
+      - symptoms: ["headache", "back pain", "joint pain"]
+        severity: ["moderate"]
+        duration: ["persistent", ">1 week"]
+      - symptoms: ["abdominal pain"]
+        severity: ["moderate", "mild"]
+        duration: ["persistent"]
+    explanation_template: "Persistent moderate pain should be evaluated by your healthcare provider."
+
+  # Priority 4: SELF_CARE - Self-care with monitoring
+  - id: "SC_001"
+    priority: 10
+    category: "SELF_CARE"
+    triage_label: "SELF_CARE_MONITOR"
+    name: "Mild Cold Symptoms"
+    conditions:
+      - symptoms: ["runny nose", "stuffy nose", "sneezing", "mild cough"]
+        severity: ["mild"]
+        duration: ["<1 week"]
+      - symptoms: ["sore throat"]
+        severity: ["mild", "moderate"]
+        duration: ["<5 days"]
+    explanation_template: "Mild cold symptoms can often be managed at home with rest, fluids, and over-the-counter medications."
+    
+  - id: "SC_002"
+    priority: 11
+    category: "SELF_CARE"
+    triage_label: "SELF_CARE_MONITOR"
+    name: "Low-grade Fever"
+    conditions:
+      - symptoms: ["fever", "low fever"]
+        temperature: ["<100.4°F", "<38°C"]
+        duration: ["<48 hours"]
+      - symptoms: ["feeling unwell", "fatigue"]
+        severity: ["mild"]
+    explanation_template: "Low-grade fever can often be managed with rest, fluids, and fever reducers. Monitor symptoms."
+    
+  - id: "SC_003"
+    priority: 12
+    category: "SELF_CARE"
+    triage_label: "SELF_CARE_MONITOR"
+    name: "Mild Headache"
+    conditions:
+      - symptoms: ["headache", "mild headache"]
+        severity: ["mild"]
+        duration: ["<24 hours"]
+      - symptoms: ["tension headache", "stress headache"]
+        severity: ["mild", "moderate"]
+    explanation_template: "Mild headaches can often be managed with rest, hydration, and over-the-counter pain relievers."
+
+# Triage label definitions
+triage_labels:
+  EMERGENCY_911:
+    urgency: "immediate"
+    action: "Call 911 immediately"
+    timeframe: "now"
+    
+  URGENT_CARE:
+    urgency: "urgent"
+    action: "Seek urgent care or emergency room"
+    timeframe: "within 2-4 hours"
+    
+  SEE_DOCTOR_24H:
+    urgency: "moderate"
+    action: "Schedule appointment with your doctor"
+    timeframe: "within 24-48 hours"
+    
+  SELF_CARE_MONITOR:
+    urgency: "low"
+    action: "Self-care with symptom monitoring"
+    timeframe: "monitor and seek care if symptoms worsen"
