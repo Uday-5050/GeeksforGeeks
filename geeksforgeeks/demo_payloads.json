@@ -1,0 +1,156 @@
+{
+  "demo_payloads": {
+    "emergency": {
+      "id": "emergency",
+      "name": "Cardiac Emergency",
+      "description": "Severe chest pain with shortness of breath - should trigger RED/EMERGENCY_911",
+      "expected_triage_label": "EMERGENCY_911",
+      "payload": {
+        "symptoms": ["chest pain", "shortness of breath", "dizziness"],
+        "severity": "severe",
+        "duration": "sudden onset",
+        "additional_factors": ["sweating", "nausea"],
+        "temperature": null,
+        "patient_age": 55
+      }
+    },
+    "stroke": {
+      "id": "stroke",
+      "name": "Stroke Symptoms",
+      "description": "Face drooping and speech difficulty - should trigger RED/EMERGENCY_911",
+      "expected_triage_label": "EMERGENCY_911",
+      "payload": {
+        "symptoms": ["face drooping", "speech difficulty", "arm weakness"],
+        "severity": "severe",
+        "duration": "sudden onset",
+        "additional_factors": [],
+        "temperature": null,
+        "patient_age": 68
+      }
+    },
+    "urgent": {
+      "id": "urgent",
+      "name": "High Fever with Concerning Symptoms",
+      "description": "High fever with difficulty breathing - should trigger URGENT_CARE",
+      "expected_triage_label": "URGENT_CARE",
+      "payload": {
+        "symptoms": ["fever", "difficulty breathing", "headache"],
+        "severity": "high",
+        "duration": "2 days",
+        "additional_factors": ["confusion"],
+        "temperature": "104°F",
+        "patient_age": 34
+      }
+    },
+    "urgent_chest_pain": {
+      "id": "urgent_chest_pain",
+      "name": "Moderate Chest Pain",
+      "description": "Persistent moderate chest pain - should trigger URGENT_CARE",
+      "expected_triage_label": "URGENT_CARE",
+      "payload": {
+        "symptoms": ["chest pain", "chest discomfort"],
+        "severity": "moderate",
+        "duration": "persistent",
+        "additional_factors": [],
+        "temperature": null,
+        "patient_age": 42
+      }
+    },
+    "gp": {
+      "id": "gp",
+      "name": "Persistent Cough",
+      "description": "Cough lasting over 2 weeks - should trigger SEE_DOCTOR_24H",
+      "expected_triage_label": "SEE_DOCTOR_24H",
+      "payload": {
+        "symptoms": ["persistent cough", "fatigue"],
+        "severity": "moderate",
+        "duration": "3 weeks",
+        "additional_factors": ["weight loss"],
+        "temperature": null,
+        "patient_age": 29
+      }
+    },
+    "gp_fever": {
+      "id": "gp_fever",
+      "name": "Moderate Persistent Fever",
+      "description": "Moderate fever for more than 48 hours - should trigger SEE_DOCTOR_24H",
+      "expected_triage_label": "SEE_DOCTOR_24H",
+      "payload": {
+        "symptoms": ["fever", "fatigue", "body aches"],
+        "severity": "moderate",
+        "duration": "4 days",
+        "additional_factors": [],
+        "temperature": "101.5°F",
+        "patient_age": 31
+      }
+    },
+    "self_care": {
+      "id": "self_care",
+      "name": "Mild Cold Symptoms",
+      "description": "Basic cold symptoms - should trigger SELF_CARE_MONITOR",
+      "expected_triage_label": "SELF_CARE_MONITOR",
+      "payload": {
+        "symptoms": ["runny nose", "sneezing", "mild cough"],
+        "severity": "mild",
+        "duration": "2 days",
+        "additional_factors": [],
+        "temperature": null,
+        "patient_age": 26
+      }
+    },
+    "self_care_headache": {
+      "id": "self_care_headache",
+      "name": "Mild Headache",
+      "description": "Mild tension headache - should trigger SELF_CARE_MONITOR",
+      "expected_triage_label": "SELF_CARE_MONITOR",
+      "payload": {
+        "symptoms": ["headache", "tension headache"],
+        "severity": "mild",
+        "duration": "few hours",
+        "additional_factors": [],
+        "temperature": null,
+        "patient_age": 33
+      }
+    },
+    "self_care_low_fever": {
+      "id": "self_care_low_fever",
+      "name": "Low-grade Fever",
+      "description": "Low-grade fever with mild symptoms - should trigger SELF_CARE_MONITOR",
+      "expected_triage_label": "SELF_CARE_MONITOR",
+      "payload": {
+        "symptoms": ["low fever", "feeling unwell"],
+        "severity": "mild",
+        "duration": "1 day",
+        "additional_factors": [],
+        "temperature": "99.8°F",
+        "patient_age": 27
+      }
+    }
+  },
+  "test_scenarios": {
+    "edge_cases": [
+      {
+        "name": "No matching symptoms",
+        "payload": {
+          "symptoms": ["unusual symptom"],
+          "severity": null,
+          "duration": null,
+          "additional_factors": [],
+          "temperature": null
+        },
+        "expected_behavior": "Should default to SELF_CARE_MONITOR"
+      },
+      {
+        "name": "Multiple matching rules",
+        "payload": {
+          "symptoms": ["chest pain", "fever"],
+          "severity": "severe",
+          "duration": "persistent",
+          "additional_factors": ["difficulty breathing"],
+          "temperature": "103°F"
+        },
+        "expected_behavior": "Should match highest priority rule (RED)"
+      }
+    ]
+  }
+}
