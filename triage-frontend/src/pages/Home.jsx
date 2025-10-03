@@ -3,18 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import TriageForm from '../components/TriageForm';
 import TriageResult from '../components/TriageResult';
 import { callTriageAPI, buildTriagePayload } from '../services/api';
-<<<<<<< HEAD
 import './Home.css';
-=======
 import { isGeminiConfigured } from '../services/gemini';
->>>>>>> 3412349c31f9968e41c4eac6ff7e332bc72928c3
 
 export default function Home() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
-<<<<<<< HEAD
+  const [geminiEnabled, setGeminiEnabled] = useState(false);
   const [patientData, setPatientData] = useState({
     name: 'John Doe',
     age: 32,
@@ -35,9 +32,6 @@ export default function Home() {
       phone: '+1 (555) 123-4567'
     }
   });
-=======
-  const [geminiEnabled, setGeminiEnabled] = useState(false);
->>>>>>> 3412349c31f9968e41c4eac6ff7e332bc72928c3
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -93,11 +87,7 @@ export default function Home() {
   };
 
   return (
-<<<<<<< HEAD
     <div className="home-container">
-      {/* Floating Logout Button */}
-=======
-    <div className="container">
       {/* AI Status Banner */}
       {geminiEnabled && (
         <div style={{
@@ -166,7 +156,7 @@ export default function Home() {
         </div>
       )}
       
->>>>>>> 3412349c31f9968e41c4eac6ff7e332bc72928c3
+      {/* Floating Logout Button */}
       {userInfo && (
         <button onClick={handleLogout} className="floating-logout-btn" title="Logout">
           <span className="logout-icon">🚪</span>
