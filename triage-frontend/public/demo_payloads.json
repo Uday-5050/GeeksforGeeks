@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Emergency: Severe Chest Pain",
+    "payload": {
+      "symptoms_text": "severe crushing chest pain radiating to left arm, sweating profusely, difficulty breathing",
+      "symptoms_list": ["chest pain", "breathlessness"],
+      "age": 55,
+      "is_child": false,
+      "severity": "severe"
+    }
+  },
+  {
+    "name": "Urgent: High Fever with Vomiting",
+    "payload": {
+      "symptoms_text": "high fever for 2 days, persistent vomiting, feeling very weak",
+      "symptoms_list": ["fever", "vomiting"],
+      "age": 8,
+      "is_child": true,
+      "severity": "moderate"
+    }
+  },
+  {
+    "name": "Self-Care: Common Cold",
+    "payload": {
+      "symptoms_text": "runny nose, mild sore throat, feeling a bit tired",
+      "symptoms_list": ["runny nose"],
+      "age": 32,
+      "is_child": false,
+      "severity": "mild"
+    }
+  }
+]
