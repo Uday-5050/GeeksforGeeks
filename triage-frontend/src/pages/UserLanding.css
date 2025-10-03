@@ -85,6 +85,13 @@
   gap: 15px;
 }
 
+.logo-image {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
 .logo-icon {
   width: 50px;
   height: 50px;
@@ -104,9 +111,9 @@
 }
 
 .logo-text {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 800;
-  background: linear-gradient(135deg, #ffffff, #a0aec0);
+  background: linear-gradient(135deg, #ffffff, #4a9eff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

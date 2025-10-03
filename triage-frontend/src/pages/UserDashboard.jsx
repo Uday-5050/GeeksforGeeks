@@ -241,14 +241,9 @@ export default function UserDashboard() {
       <aside className="user-sidebar">
         <div className="sidebar-header">
           <div className="logo-user-dashboard">
-            <svg viewBox="0 0 100 100" className="logo-svg-user">
-              <path d="M50 20 L65 35 L50 50 L35 35 Z" fill="white" opacity="0.9"/>
-              <path d="M35 35 L50 50 L35 65 L20 50 Z" fill="white" opacity="0.7"/>
-              <path d="M50 50 L65 65 L50 80 L35 65 Z" fill="white" opacity="0.9"/>
-              <path d="M65 35 L80 50 L65 65 L50 50 Z" fill="white" opacity="0.7"/>
-            </svg>
+            <img src="/curemind-logo.png" alt="CureMind Logo" className="logo-image-dashboard" />
           </div>
-          <h2>HEALTH CHECK</h2>
+          <h2>CUREMIND</h2>
         </div>
 
         <nav className="user-nav">
