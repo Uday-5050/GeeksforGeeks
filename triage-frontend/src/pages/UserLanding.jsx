@@ -95,6 +95,19 @@ function UserLanding() {
           </p>
         </section>
 
+        {/* CTA Section - Moved Above Features */}
+        <section className="cta-section">
+          <div className="cta-card">
+            <h2 className="cta-title">Ready to Check Your Symptoms?</h2>
+            <p className="cta-text">
+              Our AI-powered system will analyze your symptoms and provide personalized health recommendations
+            </p>
+            <button className="cta-button" onClick={() => navigate('/user-dashboard')}>
+              <span>🚀</span> Start Health Check
+            </button>
+          </div>
+        </section>
+
         {/* Features Grid */}
         <section className="features-section">
           <h2 className="section-title">Explore Our Features</h2>
@@ -138,19 +151,6 @@ function UserLanding() {
             <div className="stat-icon">🔒</div>
             <div className="stat-number">100%</div>
             <div className="stat-label">Secure</div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="cta-section">
-          <div className="cta-card">
-            <h2 className="cta-title">Ready to Check Your Symptoms?</h2>
-            <p className="cta-text">
-              Our AI-powered system will analyze your symptoms and provide personalized health recommendations
-            </p>
-            <button className="cta-button" onClick={() => navigate('/user-dashboard')}>
-              <span>🚀</span> Start Health Check
-            </button>
           </div>
         </section>
       </main>

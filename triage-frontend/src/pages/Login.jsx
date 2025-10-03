@@ -94,33 +94,41 @@ export default function Login() {
         
         <div className="healthcare-branding">
           <div className="symptom-scan-logo">
-            <svg viewBox="0 0 200 200" className="logo-svg-main">
-              {/* Head outline */}
-              <path d="M 80 150 Q 70 120 70 90 Q 70 50 95 35 Q 110 28 125 35 Q 150 50 150 90 Q 150 115 142 140" 
-                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="3" />
+            <svg viewBox="0 0 240 240" className="logo-svg-main" style={{width: '280px', height: '280px'}}>
+              {/* Head outline with profile */}
+              <path d="M 140 200 Q 145 185 148 170 L 160 172 Q 165 150 165 130 Q 165 90 145 65 Q 130 45 105 45 Q 80 45 65 65 Q 45 90 45 130 Q 45 160 55 185 Q 60 195 70 200" 
+                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="3.5" />
               
-              {/* Brain circle */}
-              <circle cx="105" cy="75" r="12" fill="#8b7fd1" />
+              {/* Inner head detail */}
+              <ellipse cx="100" cy="110" rx="35" ry="45" fill="#d4c5f0" opacity="0.5" />
               
-              {/* Magnifying glass circle */}
-              <circle cx="115" cy="100" r="25" fill="white" stroke="#8b7fd1" strokeWidth="3" />
+              {/* Brain/person circle */}
+              <circle cx="100" cy="85" r="16" fill="#8b7fd1" />
               
-              {/* Medical caduceus symbol */}
-              <g transform="translate(115, 100)">
-                <line x1="0" y1="-12" x2="0" y2="12" stroke="#8b7fd1" strokeWidth="2.5" />
-                <path d="M -8 -8 Q 0 0 -8 8" fill="none" stroke="#8b7fd1" strokeWidth="2" />
-                <path d="M 8 -8 Q 0 0 8 8" fill="none" stroke="#8b7fd1" strokeWidth="2" />
-                <circle cx="0" cy="-14" r="3" fill="#8b7fd1" />
-                <line x1="-4" y1="-18" x2="-1" y2="-14" stroke="#8b7fd1" strokeWidth="1.5" />
-                <line x1="4" y1="-18" x2="1" y2="-14" stroke="#8b7fd1" strokeWidth="1.5" />
+              {/* Magnifying glass background circle */}
+              <circle cx="120" cy="130" r="38" fill="white" stroke="#8b7fd1" strokeWidth="4" />
+              
+              {/* Medical caduceus symbol - larger */}
+              <g transform="translate(120, 130)">
+                {/* Central staff */}
+                <line x1="0" y1="-18" x2="0" y2="18" stroke="#8b7fd1" strokeWidth="3" />
+                {/* Snake 1 */}
+                <path d="M -12 -12 Q -2 -6 -12 0 Q -2 6 -12 12" fill="none" stroke="#8b7fd1" strokeWidth="2.5" />
+                {/* Snake 2 */}
+                <path d="M 12 -12 Q 2 -6 12 0 Q 2 6 12 12" fill="none" stroke="#8b7fd1" strokeWidth="2.5" />
+                {/* Top circle */}
+                <circle cx="0" cy="-20" r="4" fill="#8b7fd1" />
+                {/* Wings */}
+                <path d="M -2 -22 L -8 -26 L -4 -20" fill="#8b7fd1" />
+                <path d="M 2 -22 L 8 -26 L 4 -20" fill="#8b7fd1" />
               </g>
               
-              {/* Magnifying glass handle */}
-              <line x1="133" y1="118" x2="145" y2="130" stroke="#8b7fd1" strokeWidth="4" strokeLinecap="round" />
+              {/* Magnifying glass handle - thicker */}
+              <line x1="148" y1="158" x2="165" y2="175" stroke="#8b7fd1" strokeWidth="5" strokeLinecap="round" />
               
-              {/* Green leaf */}
-              <ellipse cx="65" cy="45" rx="12" ry="20" fill="#90c674" transform="rotate(-30 65 45)" />
-              <line x1="65" y1="35" x2="65" y2="55" stroke="#7ab05f" strokeWidth="1.5" />
+              {/* Green leaf - larger */}
+              <ellipse cx="58" cy="60" rx="15" ry="25" fill="#90c674" transform="rotate(-25 58 60)" />
+              <line x1="58" y1="48" x2="58" y2="72" stroke="#7ab05f" strokeWidth="2" />
             </svg>
           </div>
           
@@ -148,19 +156,41 @@ export default function Login() {
         <div className="login-card">
           {/* Logo */}
           <div className="card-logo">
-            <svg viewBox="0 0 120 120" className="card-logo-svg">
-              <path d="M 40 90 Q 35 70 35 50 Q 35 25 55 15 Q 65 10 75 15 Q 95 25 95 50 Q 95 67 89 83" 
-                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="2.5" />
-              <circle cx="60" cy="42" r="8" fill="#8b7fd1" />
-              <circle cx="68" cy="58" r="15" fill="white" stroke="#8b7fd1" strokeWidth="2.5" />
-              <g transform="translate(68, 58)">
-                <line x1="0" y1="-7" x2="0" y2="7" stroke="#8b7fd1" strokeWidth="2" />
-                <path d="M -5 -5 Q 0 0 -5 5" fill="none" stroke="#8b7fd1" strokeWidth="1.5" />
-                <path d="M 5 -5 Q 0 0 5 5" fill="none" stroke="#8b7fd1" strokeWidth="1.5" />
-                <circle cx="0" cy="-9" r="2" fill="#8b7fd1" />
+            <svg viewBox="0 0 180 180" className="card-logo-svg" style={{width: '140px', height: '140px'}}>
+              {/* Head outline with profile */}
+              <path d="M 105 150 Q 108 140 110 128 L 118 129 Q 122 113 122 98 Q 122 68 108 49 Q 97 34 78 34 Q 60 34 49 49 Q 35 68 35 98 Q 35 120 41 139 Q 45 146 52 150" 
+                    fill="#e8e0f7" stroke="#8b7fd1" strokeWidth="3" />
+              
+              {/* Inner head detail */}
+              <ellipse cx="75" cy="83" rx="26" ry="34" fill="#d4c5f0" opacity="0.5" />
+              
+              {/* Brain/person circle */}
+              <circle cx="75" cy="64" r="12" fill="#8b7fd1" />
+              
+              {/* Magnifying glass background circle */}
+              <circle cx="90" cy="98" r="28" fill="white" stroke="#8b7fd1" strokeWidth="3" />
+              
+              {/* Medical caduceus symbol */}
+              <g transform="translate(90, 98)">
+                {/* Central staff */}
+                <line x1="0" y1="-13" x2="0" y2="13" stroke="#8b7fd1" strokeWidth="2.5" />
+                {/* Snake 1 */}
+                <path d="M -9 -9 Q -1.5 -4.5 -9 0 Q -1.5 4.5 -9 9" fill="none" stroke="#8b7fd1" strokeWidth="2" />
+                {/* Snake 2 */}
+                <path d="M 9 -9 Q 1.5 -4.5 9 0 Q 1.5 4.5 9 9" fill="none" stroke="#8b7fd1" strokeWidth="2" />
+                {/* Top circle */}
+                <circle cx="0" cy="-15" r="3" fill="#8b7fd1" />
+                {/* Wings */}
+                <path d="M -1.5 -16.5 L -6 -19.5 L -3 -15" fill="#8b7fd1" />
+                <path d="M 1.5 -16.5 L 6 -19.5 L 3 -15" fill="#8b7fd1" />
               </g>
-              <line x1="79" y1="69" x2="88" y2="78" stroke="#8b7fd1" strokeWidth="3" strokeLinecap="round" />
-              <ellipse cx="35" cy="25" rx="8" ry="13" fill="#90c674" transform="rotate(-30 35 25)" />
+              
+              {/* Magnifying glass handle */}
+              <line x1="111" y1="119" x2="123" y2="131" stroke="#8b7fd1" strokeWidth="4" strokeLinecap="round" />
+              
+              {/* Green leaf */}
+              <ellipse cx="43" cy="45" rx="11" ry="19" fill="#90c674" transform="rotate(-25 43 45)" />
+              <line x1="43" y1="36" x2="43" y2="54" stroke="#7ab05f" strokeWidth="1.5" />
             </svg>
           </div>
 
